@@ -1,8 +1,16 @@
 # LSAT Quest progress
 
-## Current slice
+**Slice 0 foundation: source published and automated cloud checks pass; Pages deployment/hosted verification pending.**
 
-**Slice 0 — Partial.** The local foundation is implemented and its type/lint/unit/DOM/build checks pass. Browser verification, current dependency installation, GitHub synchronization, and deployment are blocked. No slice is declared fully complete. Slice 1 has not started.
+## 2026-10-28: Foundation dependency repair and cloud validation
+
+The public repository is [malikmiller-dev/lsat-quest](https://github.com/malikmiller-dev/lsat-quest). This branch repairs foundation dependencies without merging the learning activity in [draft PR #1](https://github.com/malikmiller-dev/lsat-quest/pull/1).
+
+Vite 7.3.7, Vitest 4.1.12 and compatible transitive fixes were installed with npm 11.6.0 without forced upgrades. At `f9da2af3f10918f44cb337d17b77c85419e8d3d4`, the [repair run](https://github.com/malikmiller-dev/lsat-quest/actions/runs/40765762878) passed the dependency audit with zero reported vulnerabilities, strict types, lint, 27 unit/DOM tests, build, formatting, and all seven Chromium browser tests. Tests cover four routes at five viewport widths, reload and theme persistence, keyboard/mobile navigation, unavailable lessons, blocked storage and production assets. This does not certify all dependencies as current or vulnerability-free.
+
+GitHub Pages source is configured as GitHub Actions, confirmed through the signed-in owner settings. Deployment and hosted visual checks are the next steps; no successful deployment is claimed here. The temporary repair workflow is removed after its successful run. Main deployment continues to require audit and functional/browser validation. Local npm/browser restrictions persist; these passing results were executed in GitHub Actions. Run `npm ci` before testing locally against the new lockfile.
+
+Slice 1 remains separate and provisional, with 71 unit/DOM and 11 browser tests passing on its own branch. Independent educational review and visual inspection remain pending before merging it. Preserve the existing private Sites preview and original Git history.
 
 ## Implemented
 
@@ -16,34 +24,6 @@
 - GitHub Actions PR/non-main validation and main-only Pages deployment gated on checks.
 - Agent/resume documentation and licensing/content boundaries.
 
-## Tests and deployment
-
-`npm run check`: passed (strict types, ESLint, 27 tests, build). Seven Playwright tests are implemented but **0 ran** because setup is blocked. No visual QA, public repository, Actions run, or verified deployment exists. Full evidence and limitations: [VALIDATION.md](VALIDATION.md).
-
-## Blockers
-
-1. `gh auth status` reports an invalid active CLI credential. The connected GitHub account is `malikmiller-dev`, while the failing local CLI entry uses an old login. Confirm account identity after reauthentication.
-2. No `lsat-quest` appeared in the connected account's repository list. Available connector tools do not create repositories or configure Pages. Browser tools failed to initialize.
-3. Package registry DNS fails. Local npm cache enabled a build, but current dependency versions/security review cannot be installed/validated here.
-4. Loopback connections fail with WinError 10013; Python Playwright blocks in asyncio socketpair creation. Direct Chromium launch also exits with access denied. Browser/visual tests need an execution environment that permits them.
-
-## Known bugs and verification gaps
-
-No confirmed source defect remains in the executed test scope. Browser rendering, mobile layout, actual reload persistence, and GitHub Actions/Pages remain unverified. Do not interpret DOM tests as visual accessibility certification or a browser-test pass.
-
-## Pending decisions and technical debt
-
-- Select a project source/content license before granting redistribution rights; currently UNLICENSED.
-- Restore dependency network access and review/update cached releases before public publication.
-- Finish browser/visual verification and repair anything it reveals.
-- Extract page modules as real learning features arrive; no speculative backend or AI setup.
-
 ## Immediate next task
 
-Finish Slice 0 gates using [DEPLOYMENT.md](DEPLOYMENT.md): authenticate the authorized account, recheck repository existence, update dependencies, run browser/visual tests, publish source, enable Actions-based Pages, and verify the actual deployment. Then create a focused Slice 1 feature branch and implement necessary/sufficient conditions with original provenance-tagged exercises, persistent attempts, one-time XP, and validated backup/restore.
-
-## Git state and recent commits
-
-Implementation commit: `cdf60c758374768048579e8314824a01dc7c1185` — `feat: establish LSAT Quest foundation and validation pipeline` (local `main`, not pushed). A subsequent documentation commit records this handoff; use `git log --oneline` as authoritative for the current checkout. No remote is configured until repository existence can be confirmed.
-
-Final local validation after formatting passed: typecheck, lint, 27 tests, and production build. Python browser-suite syntax compilation also passed; browser execution is still blocked. A source/build archive and Git bundle preserve this milestone independently of the unpublished remote.
+Run final PR validation, merge the isolated foundation fix, deploy main through Pages, and verify the returned URL on desktop/mobile with both themes and hash-route refresh. Record run/deployment evidence. Keep the learning-quest PR separate until its content and visual review gates pass. Broader current-release dependency review remains technical debt.
