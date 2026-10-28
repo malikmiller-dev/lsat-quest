@@ -44,4 +44,6 @@ Finish Slice 0 gates using [DEPLOYMENT.md](DEPLOYMENT.md): authenticate the auth
 
 ## Git state and recent commits
 
-Source is prepared on local `main`. Publication is not claimed. The implementation commit will be recorded in the final local handoff entry; use `git log --oneline` as authoritative for the current checkout. No remote is configured until repository existence can be confirmed.
+Implementation commit: `cdf60c758374768048579e8314824a01dc7c1185` — `feat: establish LSAT Quest foundation and validation pipeline` (local `main`, not pushed). A subsequent documentation commit records this handoff; use `git log --oneline` as authoritative for the current checkout. No remote is configured until repository existence can be confirmed.
+
+Final local validation after formatting passed: typecheck, lint, 27 tests, and production build. Python browser-suite syntax compilation also passed; browser execution is still blocked. A source/build archive and Git bundle preserve this milestone independently of the unpublished remote.
