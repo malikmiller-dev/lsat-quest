@@ -1,23 +1,23 @@
 # Roadmap
 
-| Slice | Deliverable                                                                       | Status                                                         |
-| ----- | --------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| 0     | Repository, application shell, CI/CD, public site                                 | Local implementation; publication blocked                      |
-| 1     | Necessary/sufficient conditions: lesson, original questions, attempts, XP, backup | Local implementation; review/browser/publication gates pending |
-| 2     | Competencies and structured curriculum                                            | Planned                                                        |
-| 3     | Versioned question engine and mistake journal                                     | Planned                                                        |
-| 4     | Memory, spaced repetition and retention                                           | Planned                                                        |
-| 5     | Deterministic adaptive study planner                                              | Planned                                                        |
-| 6     | RPG progression and educational rewards                                           | Planned                                                        |
-| 7     | LawHub launcher and manual official assessments                                   | Planned                                                        |
-| 8     | Optional provider-neutral AI tutoring                                             | Planned                                                        |
-| 9     | Reading Comprehension activities                                                  | Planned                                                        |
-| 10    | One complete reasoning mini-game, then expansion                                  | Planned                                                        |
-| 11    | Provisional generation and content approval                                       | Planned                                                        |
-| 12    | Reproducible learning analytics                                                   | Planned                                                        |
-| 13    | Argumentative Writing                                                             | Planned                                                        |
-| 14    | Accessibility, performance, offline hardening                                     | Planned                                                        |
-| 15    | Comprehensive integration and product evaluation                                  | Planned                                                        |
+| Slice | Deliverable                                                                       | Status                                                 |
+| ----- | --------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| 0     | Repository, application shell, CI/CD, public site                                 | Local implementation; publication blocked              |
+| 1     | Necessary/sufficient conditions: lesson, original questions, attempts, XP, backup | Local v0.2.1; review/browser/publication gates pending |
+| 2     | Competencies and structured curriculum                                            | Planned                                                |
+| 3     | Versioned question engine and mistake journal                                     | Planned                                                |
+| 4     | Memory, spaced repetition and retention                                           | Planned                                                |
+| 5     | Deterministic adaptive study planner                                              | Planned                                                |
+| 6     | RPG progression and educational rewards                                           | Planned                                                |
+| 7     | LawHub launcher and manual official assessments                                   | Planned                                                |
+| 8     | Optional provider-neutral AI tutoring                                             | Planned                                                |
+| 9     | Reading Comprehension activities                                                  | Planned                                                |
+| 10    | One complete reasoning mini-game, then expansion                                  | Planned                                                |
+| 11    | Provisional generation and content approval                                       | Planned                                                |
+| 12    | Reproducible learning analytics                                                   | Planned                                                |
+| 13    | Argumentative Writing                                                             | Planned                                                |
+| 14    | Accessibility, performance, offline hardening                                     | Planned                                                |
+| 15    | Comprehensive integration and product evaluation                                  | Planned                                                |
 
 Accessibility basics are required from Slice 0; Slice 14 is additional hardening. No roadmap dates imply official exam-format claims. Check current LSAC sources when implementing exam-versioned assessment.
 

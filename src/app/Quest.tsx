@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState, type Ref } from 'react';
+import { BackupCapacityError } from '../domain/backup';
 import {
   LESSON_ID,
   MAX_REASONING,
@@ -95,10 +96,18 @@ function Lesson() {
     </section>
   );
 }
-export function Feedback({ question, attempt }: { question: Question; attempt: Attempt }) {
+export function Feedback({
+  question,
+  attempt,
+  headingRef,
+}: {
+  question: Question;
+  attempt: Attempt;
+  headingRef?: Ref<HTMLHeadingElement>;
+}) {
   return (
     <section className="answer-feedback" aria-label="Answer explanation">
-      <h3 aria-live="polite">
+      <h3 aria-live="polite" ref={headingRef} tabIndex={headingRef ? -1 : undefined}>
         {attempt.correct ? 'Correct.' : 'Not quite.'} Answer {question.answer} is supported.
       </h3>
       <p>{question.explanation}</p>
@@ -124,33 +133,41 @@ function Exercise({ question }: { question: Question }) {
   const latest = state!.attempts
     .filter((a) => a.questionId === question.id && a.questionVersion === question.version)
     .sort((a, b) => b.submittedAt.localeCompare(a.submittedAt) || b.id.localeCompare(a.id))[0];
-  const [retrying, setRetrying] = useState(false);
+  // Other tabs can update progress without replacing this tab's answer or draft.
+  const [displayed, setDisplayed] = useState<Attempt | undefined>(() => latest);
   const [choice, setChoice] = useState<ChoiceId | ''>('');
   const [reasoning, setReasoning] = useState('');
   const [submissionId, setSubmissionId] = useState(() => crypto.randomUUID());
-  const [saved, setSaved] = useState<Attempt | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const displayed = saved ?? (retrying ? undefined : latest);
+  const feedbackHeading = useRef<HTMLHeadingElement>(null);
+  const firstAnswer = useRef<HTMLInputElement>(null);
+  const focusAfterAction = useRef<'feedback' | 'answer' | null>(null);
+  useEffect(() => {
+    if (focusAfterAction.current === 'feedback') feedbackHeading.current?.focus();
+    if (focusAfterAction.current === 'answer') firstAnswer.current?.focus();
+    focusAfterAction.current = null;
+  }, [displayed]);
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!choice || busy) return;
     setBusy(true);
     setError('');
     try {
-      setSaved(
-        await store.submit({
-          id: submissionId,
-          questionId: question.id,
-          questionVersion: question.version,
-          choice,
-          reasoning,
-        }),
-      );
-      setRetrying(false);
-    } catch {
+      const attempt = await store.submit({
+        id: submissionId,
+        questionId: question.id,
+        questionVersion: question.version,
+        choice,
+        reasoning,
+      });
+      focusAfterAction.current = 'feedback';
+      setDisplayed(attempt);
+    } catch (failure) {
       setError(
-        'Your answer could not be saved. Your selection and notes are still here. Retry when browser storage is available.',
+        failure instanceof BackupCapacityError
+          ? `${failure.message} Your selection and notes are still here.`
+          : 'Your answer could not be saved. Your selection and notes are still here. Retry when browser storage is available.',
       );
     } finally {
       setBusy(false);
@@ -175,12 +192,12 @@ function Exercise({ question }: { question: Question }) {
               <p>{displayed.reasoning}</p>
             </div>
           )}
-          <Feedback question={question} attempt={displayed} />
+          <Feedback question={question} attempt={displayed} headingRef={feedbackHeading} />
           <button
             className="button secondary"
             onClick={() => {
-              setRetrying(true);
-              setSaved(null);
+              focusAfterAction.current = 'answer';
+              setDisplayed(undefined);
               setChoice('');
               setReasoning('');
               setSubmissionId(crypto.randomUUID());
@@ -202,6 +219,7 @@ function Exercise({ question }: { question: Question }) {
                   <input
                     type="radio"
                     name="answer"
+                    ref={c.id === question.choices[0].id ? firstAnswer : undefined}
                     value={c.id}
                     checked={choice === c.id}
                     onChange={() => setChoice(c.id)}
@@ -241,7 +259,8 @@ function Practice() {
   const { store, state } = useStudy();
   const session = state!.sessions.find((s) => s.id === LESSON_ID);
   const stats = progress(state!);
-  const active = questions.find((q) => q.id === session?.activeQuestionId) ?? questions[0];
+  const [activeId, setActiveId] = useState(() => session?.activeQuestionId ?? questions[0].id);
+  const active = questions.find((q) => q.id === activeId) ?? questions[0];
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const run = async (action: () => Promise<void>) => {
@@ -250,11 +269,19 @@ function Practice() {
     setError('');
     try {
       await action();
-    } catch {
-      setError('The change could not be saved. Please retry when browser storage is available.');
+    } catch (failure) {
+      setError(
+        failure instanceof BackupCapacityError
+          ? failure.message
+          : 'The change could not be saved. Please retry when browser storage is available.',
+      );
     } finally {
       setBusy(false);
     }
+  };
+  const select = async (id: string) => {
+    await store.selectQuestion(id);
+    setActiveId(id);
   };
   return (
     <section aria-label="Practice exercises" className="practice-section">
@@ -308,7 +335,7 @@ function Practice() {
                 className={q.id === active.id ? 'selected' : ''}
                 aria-pressed={q.id === active.id}
                 disabled={busy}
-                onClick={() => void run(() => store.selectQuestion(q.id))}
+                onClick={() => void run(() => select(q.id))}
               >
                 Exercise {i + 1}
                 {state!.attempts.some(
@@ -325,9 +352,7 @@ function Practice() {
               <button
                 className="button secondary"
                 disabled={busy}
-                onClick={() =>
-                  void run(() => store.selectQuestion(questions[questions.indexOf(active) + 1].id))
-                }
+                onClick={() => void run(() => select(questions[questions.indexOf(active) + 1].id))}
               >
                 Next exercise →
               </button>

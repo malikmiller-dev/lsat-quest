@@ -164,11 +164,14 @@ class BrowserTests(unittest.TestCase):
         self.page.get_by_label("Your reasoning", exact=False).fill("I reversed the rule.")
         self.page.get_by_role("button", name="Submit answer").click()
         expect(self.page.get_by_role("heading", name="Not quite. Answer A is supported.")).to_be_visible()
+        expect(self.page.get_by_role("heading", name="Not quite. Answer A is supported.")).to_be_focused()
         self.page.get_by_role("button", name="Try again").click()
+        expect(self.page.get_by_role("radio").first).to_be_focused()
         for index, question in enumerate(questions):
             self.page.get_by_role("radio", name=re.compile(r"^" + question["answer"] + r"\.")).check()
             self.page.get_by_role("button", name="Submit answer").click()
             expect(self.page.get_by_role("heading", name=f'Correct. Answer {question["answer"]} is supported.')).to_be_visible()
+            expect(self.page.get_by_role("heading", name=f'Correct. Answer {question["answer"]} is supported.')).to_be_focused()
             if index < len(questions) - 1:
                 self.page.get_by_role("button", name="Next exercise").click()
         self.page.get_by_role("button", name="Complete quest").click()
@@ -220,6 +223,32 @@ class BrowserTests(unittest.TestCase):
         expect(self.page.get_by_role("button", name="Start provisional exercises")).to_have_count(0)
         self.page.get_by_role("checkbox", name="Gold border (A)").check()
         expect(self.page.get_by_text("Violates the rule:", exact=False)).to_be_visible()
+
+    def test_other_tab_updates_preserve_answer_draft(self):
+        self.page.goto(BASE + "#/quest")
+        self.page.get_by_role("button", name="Start provisional exercises").click()
+        self.page.get_by_role("radio").nth(1).check()
+        self.page.get_by_label("Your reasoning", exact=False).fill("My local draft")
+        other = self.context.new_page()
+        other.on("pageerror", lambda error: self.errors.append(str(error)))
+        other.goto(BASE + "#/quest")
+        other.get_by_role("radio").first.check()
+        other.get_by_role("button", name="Submit answer").click()
+        expect(other.get_by_role("heading", name="Correct. Answer A is supported.")).to_be_visible()
+        expect(self.page.get_by_text("1/6 solved · 10 XP earned", exact=True)).to_be_visible()
+        expect(self.page.get_by_role("radio").nth(1)).to_be_checked()
+        expect(self.page.get_by_label("Your reasoning", exact=False)).to_have_value("My local draft")
+        other.get_by_role("button", name="Next exercise").click()
+        other.get_by_role("radio").nth(1).check()
+        other.get_by_role("button", name="Submit answer").click()
+        expect(self.page.get_by_text("2/6 solved · 20 XP earned", exact=True)).to_be_visible()
+        expect(self.page.get_by_role("button", name=re.compile(r"^Exercise 1"))).to_have_attribute("aria-pressed", "true")
+        expect(self.page.get_by_label("Your reasoning", exact=False)).to_have_value("My local draft")
+        self.page.get_by_role("button", name="Submit answer").click()
+        expect(self.page.get_by_role("heading", name="Not quite. Answer A is supported.")).to_be_visible()
+        self.page.goto(BASE + "#/history")
+        expect(self.page.get_by_text("3 saved attempts. Most recent first.")).to_be_visible()
+        expect(self.page.get_by_text("My local draft", exact=True)).to_be_visible()
 
 
 if __name__ == "__main__":

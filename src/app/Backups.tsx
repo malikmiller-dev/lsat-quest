@@ -109,7 +109,9 @@ export function Backups() {
         </p>
         <p>
           Backups contain your study notes. Import accepts schema version 1 and known question
-          versions only (up to 5 MiB and 10,000 attempts). Nothing is uploaded by these controls.
+          versions only (up to 5 MiB and 10,000 attempts). New saves or merges that exceed these
+          limits are rejected without changing existing history. Nothing is uploaded by these
+          controls.
         </p>
         <StudyGate>
           <Controls />

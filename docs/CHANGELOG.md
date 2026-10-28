@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1 - 2026-10-28 - Local reliability fixes (unpublished)
+
+- Fixed saves, completions and imports that could create a history too large to export. Capacity validation now runs before commit; rejected operations preserve all previous records and rewards.
+- Fixed reactive updates from another connection replacing an open answer draft or changing the current exercise. Committed progress still updates and the saved resume point still applies on a later visit.
+- Restored keyboard focus after answer submission and retry. Added specific backup-limit messages without discarding the draft.
+- Added nine regression tests, bringing the suite to 71 passing tests in six files; verified reward idempotency across independent database connections.
+- Expanded the prepared browser suite to 11 tests, including cross-tab drafts and feedback focus. Browser setup still ran zero tests. GitHub authentication, npm DNS, independent content review and publication gates remain unresolved.
+
 ## 0.2.0 - 2026-10-28 - First quest local milestone (unpublished)
 
 - Added a necessary/sufficient lesson, four-case interactive rule, and six original versioned provisional exercises with answer-choice explanations.

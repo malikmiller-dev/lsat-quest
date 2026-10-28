@@ -1,39 +1,52 @@
-# Validation record - Slice 1
+# Validation record - Slice 1, v0.2.1
 
-Run date: 2026-10-28. Node 22.18.0, npm 11.6.0, Python 3.13. Core dependency installation/security review still uses the documented offline exception. A clean `npm ci --offline --cache ../work/npm-cache --no-audit --no-fund` reinstalled all 323 packages successfully, and the combined gate passed afterward. The cache path is local to this workspace; normal environments should use `npm ci`.
+Run date: 2026-10-28. Node 22.18.0, npm 11.6.0, Python 3.13. Core dependencies still use the documented offline exception. The previous v0.2.0 milestone passed a clean offline npm ci; no dependencies changed in this repair.
 
-| Check                                       | Actual result                                                                       |
-| ------------------------------------------- | ----------------------------------------------------------------------------------- |
-| Offline npm install                         | Passed with pinned source-build packages and install-links=true                     |
-| Dexie smoke test with fake-indexeddb        | Passed: create, write, read, delete; reports 4.4.7                                  |
-| `npm run verify:vendor`                     | Passed: 185 upstream Git blob hashes; generated and installed compiled copies match |
-| `npm run typecheck`                         | Passed: strict TypeScript                                                           |
-| `npm run lint`                              | Passed: zero warnings                                                               |
-| `npm test`                                  | Passed: 5 files, 62 tests                                                           |
-| `npm run build`                             | Passed: static production build, 42 transformed modules                             |
-| `npm run check`                             | Passed: combined verification gate                                                  |
-| `python -m py_compile e2e/browser_tests.py` | Passed                                                                              |
-| `npm run test:e2e`                          | Setup failed: production preview did not become ready; 0 tests ran                  |
-| Desktop/mobile visual inspection            | Not executed; no verified screenshots                                               |
-| GitHub Actions / Pages                      | Not executed / not deployed                                                         |
+| Check                                              | Actual result                                                                         |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `npm run verify:vendor`                            | Passed: 185 upstream Git blob hashes and matching generated/installed compiled copies |
+| `npm run typecheck`                                | Passed: strict TypeScript                                                             |
+| `npm run lint`                                     | Passed: zero warnings                                                                 |
+| `npm test`                                         | Passed: 6 files, 71 tests                                                             |
+| `npm run build`                                    | Passed: production build, 42 transformed modules                                      |
+| `npm run check`                                    | Passed: combined verification gate                                                    |
+| `python -m py_compile e2e/browser_tests.py`        | Passed                                                                                |
+| `npm run test:e2e`                                 | Setup failed: production preview did not become ready; 0 tests ran                    |
+| `npm ping --fetch-retries=0 --fetch-timeout=10000` | Failed: ENOTFOUND for registry.npmjs.org                                              |
+| `gh auth status`                                   | Failed: invalid local credential                                                      |
+| Connected GitHub profile / repository lookup       | malikmiller-dev / requested repository returned 404                                   |
+| Desktop/mobile visual inspection                   | Not executed                                                                          |
+| GitHub Actions / Pages                             | Not executed / not deployed                                                           |
+
+## Defects reproduced and fixed in this continuation
+
+Before the repairs, the newly added regressions showed:
+
+- Two individually valid 700-attempt backups with long notes could merge above 5 MiB. The import succeeded but the resulting history could not be exported.
+- A new answer/reward, completion reward, or 10,001st attempt could move existing history outside the backup byte/count limits.
+- A second database connection's saved answer replaced the first tab's open draft with feedback.
+- Replacing the answer form after submission left keyboard focus on the document body.
+
+The first targeted run failed six cases. After the fixes, all targeted cases and the full 71-test gate passed. The current tab's exercise selection also remains stable when another connection updates the shared resume point. These are tested database/DOM outcomes; browser behavior still needs verification.
 
 ## Passing coverage
 
-- 16 route cases and 5 appearance cases.
-- 8 foundation React integration cases for routing, focus, appearance recovery and roadmap.
-- 25 content/database cases: each exercise has one formally supported answer; provisional provenance; correct/incorrect attempts; monotonic retry order; duplicate/concurrent submissions; one-time completion; rollback on reward failure; database reopen; invalid submissions; full backup round trip; merged histories; tampered grade/reward/version/status/completion/duplicates/fields; ID conflicts; atomic import rollback; malformed/oversized/unsupported JSON.
-- 8 quest React integration cases using the actual database service with fake-indexeddb: all four interactive rule cases; full six-question activity including a wrong answer and literal-text notes; save failure/retry; interrupted-session remount; query failure/retry; truly unavailable IndexedDB; backup preview/merge/invalid file; real Blob download request.
+- 16 navigation and 5 appearance cases.
+- 8 foundation React cases for routing, focus, appearance recovery and roadmap.
+- 26 content/database cases for formal answer keys, provenance, atomic attempts/rewards, idempotency, concurrency across independent connections, reopening, completion, backup validation/merge, conflicts and rollback.
+- 4 capacity cases using actual size/count boundaries: oversized combined backups, answer/reward rollback, completion rollback, and refusing a 10,001st attempt. Every rejection leaves the prior export byte-for-byte unchanged.
+- 12 quest React cases using the real store and fake-indexeddb: the full learning activity, incorrect attempts, literal-text notes, failure/retry, remount, missing storage, file preview/merge, Blob download, another connection's updates, draft retention, capacity messaging, and focus after submit/retry.
 
-The tests revealed and fixed an endless loading state when IndexedDB is missing: explicitly opening the database now produces a retryable error. An explicit status role on feedback was replaced with an ARIA live heading so heading semantics are retained.
+Source tests: [learning-capacity.test.ts](../src/data/learning-capacity.test.ts), [learning-store.test.ts](../src/data/learning-store.test.ts), [Quest.test.tsx](../src/app/Quest.test.tsx), plus existing foundation tests.
 
 ## Prepared browser coverage (not passed)
 
-Ten Playwright tests target the built application: deep links/reload, appearance reload/reopen, denied preference storage, keyboard navigation, mobile menu, six routes at five widths, base-path assets/unavailable features, full quest plus native download/restore into a fresh browser context, invalid import preserving history, and missing IndexedDB.
+Eleven Playwright tests target the built application: deep links/reload, appearance reload/reopen, denied preference storage, keyboard navigation, mobile menu, six routes at five widths, base-path assets/unavailable features, full quest plus native download/restore into a fresh context, invalid import preserving history, missing IndexedDB, and two-tab draft preservation. The full quest also asserts focus after submission and retry.
 
-The suite cannot reach the production preview on this host. Earlier diagnostics found WinError 10013 for loopback, an asyncio socketpair stall, and direct Chromium exit 3221225506 (0xC0000022). React/jsdom and fake-indexeddb results do not prove real browser rendering, accessibility, persistence, native download handling, or cross-tab behavior.
+The suite cannot reach the production preview on this host. Earlier diagnostics found WinError 10013 for loopback, an asyncio socketpair stall, and direct Chromium exit 3221225506 (0xC0000022). React/jsdom and fake-indexeddb do not prove real browser rendering, accessibility, persistence, native downloads or cross-tab behavior.
 
 ## Review limits
 
-No official exam-format claims or copied test material are included. Formal exercise audits check the authored formal model only. Prose ambiguity, pedagogy and independent expert review remain open; see CONTENT_REVIEW. No real learner records are in the repo.
+The educational content and schema remain unchanged. Internal formal audits do not establish independent educational review; all exercises stay provisional. No real learner records are in the repo.
 
-No confirmed critical defect remains in the executed scope. Dependency security review/current-stable upgrades, visual/browser testing, authenticated GitHub publishing, and verified Pages deployment remain release gates.
+No confirmed critical defect remains in the supported local test scope. Histories already exceeding the old v0.2.0 backup limits are not automatically repaired or truncated. Dependency security/current-stable review, browser/visual testing, authenticated GitHub publication, independent content review, and verified Pages deployment remain open gates.

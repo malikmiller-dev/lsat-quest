@@ -31,7 +31,7 @@ Dexie database `lsat-quest-learning`, schema version 1:
 
 A read snapshot spans all three tables. Submission and its first-correct reward commit in one write transaction. Retrying the identical submission ID is idempotent; mismatched data for that ID is rejected. Timestamps are monotonic within this database even under a repeated or backward-moving device clock. Completion and its one-time reward are also atomic. UI feedback follows successful persistence.
 
-Reactive queries reflect committed records. The service owns database operations; UI state holds only drafts and action status. Unsubmitted choices/notes are deliberately not autosaved.
+Reactive queries reflect committed records. The service owns database operations; UI state holds drafts, the current tab's selected exercise/reviewed attempt, and action status. Another tab's writes update counters without replacing the open draft. The stored active question is read when the practice view mounts; later navigation in this tab updates both its local selection and the shared resume point. Unsubmitted choices/notes are not autosaved and do not survive leaving the exercise or reloading. After a successful submission, focus moves to the feedback heading; retry moves it to the first answer.
 
 ## Backup contract
 
@@ -39,7 +39,9 @@ Schema 1 JSON contains a format marker, export timestamp, and all three tables. 
 
 Restore merges attempts by ID, rejects conflicting copies, retains existing active exercise, takes the earliest session start/completion, and deduplicates rewards by educational event. Revalidate the merged state, then write everything in one transaction. Read/validation/write failures leave existing study records intact. Empty backups are valid. No deletion or replacement of history occurs.
 
-Supported backup limit: 5 MiB / 10,000 attempts. Oversized exports fail visibly without modifying records. Future versions need explicit migrations and retained question versions; never reinterpret old attempts against changed answer keys.
+Supported backup limit: 5 MiB / 10,000 attempts. Before a submission or completion transaction commits, serialize and validate its resulting snapshot. A merge is also checked after combining the two valid inputs, before any writes. Capacity failure throws `BackupCapacityError`, rolls back every change, and leaves the previous exportable state intact. The interface identifies the limit and keeps the answer draft. UTF-8 byte length is measured on the actual serialized backup. This adds a bounded full-history validation inside each write transaction; a larger history design will need a different export strategy.
+
+Previously oversized histories from 0.2.0 are not automatically truncated or repaired. They remain outside the supported backup contract. Future versions need explicit migrations and retained question versions; never reinterpret old attempts against changed answer keys.
 
 ## Content and rewards
 

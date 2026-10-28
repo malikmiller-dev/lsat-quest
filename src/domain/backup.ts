@@ -14,6 +14,15 @@ import {
 } from './learning';
 
 export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
+export const MAX_BACKUP_ATTEMPTS = 10000;
+export class BackupCapacityError extends Error {
+  constructor() {
+    super(
+      'This action exceeds the supported backup limit (5 MiB or 10,000 attempts). It was not saved. Existing history was kept.',
+    );
+    this.name = 'BackupCapacityError';
+  }
+}
 export interface Backup {
   format: 'lsat-quest-backup';
   schemaVersion: 1;
@@ -55,7 +64,9 @@ function unique(records: { id: string }[]): void {
 }
 export function validateState(value: unknown): LearningState {
   const data = object(value, ['attempts', 'sessions', 'rewards']);
-  const attempts = list(data.attempts, 10000).map((entry): Attempt => {
+  if (Array.isArray(data.attempts) && data.attempts.length > MAX_BACKUP_ATTEMPTS)
+    throw new BackupCapacityError();
+  const attempts = list(data.attempts, MAX_BACKUP_ATTEMPTS).map((entry): Attempt => {
     const row = object(entry, [
       'id',
       'questionId',
@@ -184,11 +195,16 @@ export function serializeBackup(
   exportedAt = new Date().toISOString(),
 ): string {
   const result = JSON.stringify(
-    { format: 'lsat-quest-backup', schemaVersion: 1, exportedAt, data: validateState(state) },
+    {
+      format: 'lsat-quest-backup',
+      schemaVersion: 1,
+      exportedAt: date(exportedAt),
+      data: validateState(state),
+    },
     null,
     2,
   );
-  parseBackup(result);
+  if (new TextEncoder().encode(result).length > MAX_BACKUP_BYTES) throw new BackupCapacityError();
   return result;
 }
 export function mergeStates(current: LearningState, incoming: LearningState): LearningState {

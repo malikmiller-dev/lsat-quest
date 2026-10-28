@@ -1,5 +1,13 @@
 # Decisions
 
+## 2026-10-28: Preserve exportability and tab-local drafts
+
+Regression tests demonstrated that two valid backups could merge above the export byte limit, and that new answers or completion rewards could also push valid history above its byte/count limits. Validate the resulting serialized state inside the write transaction (or before merged writes), with a typed capacity error. This preserves earlier data and XP instead of acknowledging an action that leaves history unsupported by restore. Existing oversized 0.2.0 histories are not silently truncated; larger-history recovery remains outside this preview.
+
+Tests also demonstrated that an external answer could replace a local unsaved form. Keep the active exercise and reviewed answer in component state for the current visit; subscribe to committed progress without replacing those local states. Continue storing the shared resume point for the next mount. Drafts remain intentionally unsaved until submission. Move keyboard focus after form replacement, with DOM regression checks and prepared browser assertions.
+
+The user requested continuation, and the same publication/browser/npm blockers were reproduced. This continuation repairs Slice 1 without introducing Slice 2 or claiming independent content review.
+
 ## 2026-10-28: Continue a local Slice 1 feature branch
 
 After the user requested continuation, rechecked GitHub, npm and browser access. The blockers persisted, but local implementation and database tests were possible. Preserve local main and implement Slice 1 on `feat/first-learning-quest`; retain partial status until review, browser and publication gates pass. This supersedes the earlier local instruction to wait for all Slice 0 gates before starting any Slice 1 work. No wider roadmap expansion is authorized by this exception.

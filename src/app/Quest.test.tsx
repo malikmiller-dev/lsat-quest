@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import '@testing-library/jest-dom/vitest';
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { indexedDB, IDBKeyRange } from 'fake-indexeddb';
@@ -8,6 +8,7 @@ import Dexie from 'dexie';
 import { App } from './App';
 import { LearningDatabase, LearningStore } from '../data/learning-store';
 import { progress, questions } from '../domain/learning';
+import { BackupCapacityError } from '../domain/backup';
 
 let store: LearningStore;
 beforeEach(() => {
@@ -45,6 +46,84 @@ function fileWithText(text: string) {
 }
 
 describe('first quest interface with real database service', () => {
+  it('keeps a local draft when another connection saves an answer to the same question', async () => {
+    await begin();
+    await userEvent.click(screen.getAllByRole('radio')[1]);
+    await userEvent.type(screen.getByLabelText(/Your reasoning/), 'My independent reasoning');
+    const other = new LearningStore(
+      new LearningDatabase(store.db.name, { indexedDB, IDBKeyRange }),
+    );
+    try {
+      await act(async () => {
+        await other.submit({
+          id: crypto.randomUUID(),
+          questionId: questions[0].id,
+          questionVersion: 1,
+          choice: 'A',
+          reasoning: 'Another tab',
+        });
+      });
+      await screen.findByText('1/6 solved · 10 XP earned');
+      expect(screen.getAllByRole('radio')[1]).toBeChecked();
+      expect(screen.getByLabelText(/Your reasoning/)).toHaveValue('My independent reasoning');
+      await userEvent.click(screen.getByRole('button', { name: 'Submit answer' }));
+      await screen.findByRole('heading', { name: 'Not quite. Answer A is supported.' });
+      expect((await store.snapshot()).attempts).toHaveLength(2);
+    } finally {
+      other.db.close();
+    }
+  });
+  it('keeps the current exercise and draft when another connection changes the saved resume point', async () => {
+    await begin();
+    await userEvent.type(screen.getByLabelText(/Your reasoning/), 'Keep this unfinished thought');
+    const other = new LearningStore(
+      new LearningDatabase(store.db.name, { indexedDB, IDBKeyRange }),
+    );
+    try {
+      await act(async () => {
+        await other.submit({
+          id: crypto.randomUUID(),
+          questionId: questions[1].id,
+          questionVersion: 1,
+          choice: questions[1].answer,
+          reasoning: 'Another tab changed the resume point',
+        });
+      });
+      await screen.findByText('1/6 solved · 10 XP earned');
+      expect(screen.getByRole('button', { name: 'Exercise 1' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      );
+      expect(screen.getByLabelText(/Your reasoning/)).toHaveValue('Keep this unfinished thought');
+      cleanup();
+      render(<App store={store} />);
+      expect(await screen.findByRole('button', { name: /^Exercise 2/ })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      );
+    } finally {
+      other.db.close();
+    }
+  });
+  it('moves keyboard focus to feedback after submission and to an answer after retry', async () => {
+    await begin();
+    await solve(0);
+    expect(screen.getByRole('heading', { name: 'Correct. Answer A is supported.' })).toHaveFocus();
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(screen.getAllByRole('radio')[0]).toHaveFocus();
+  });
+  it('explains a backup capacity rejection while preserving the answer draft', async () => {
+    await begin();
+    vi.spyOn(store, 'submit').mockRejectedValueOnce(new BackupCapacityError());
+    await userEvent.click(screen.getAllByRole('radio')[0]);
+    await userEvent.type(screen.getByLabelText(/Your reasoning/), 'Keep my answer');
+    await userEvent.click(screen.getByRole('button', { name: 'Submit answer' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('backup limit');
+    expect(screen.getByRole('alert')).toHaveTextContent('Existing history was kept');
+    expect(screen.getByLabelText(/Your reasoning/)).toHaveValue('Keep my answer');
+    expect(screen.getAllByRole('radio')[0]).toBeChecked();
+    expect((await store.snapshot()).attempts).toHaveLength(0);
+  });
   it('checks all four combinations of the interactive conditional', async () => {
     render(<App store={store} />);
     const a = screen.getByRole('checkbox', { name: 'Gold border (A)' });

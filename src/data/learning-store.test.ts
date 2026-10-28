@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { indexedDB, IDBKeyRange } from 'fake-indexeddb';
-import { LearningDatabase, LearningStore } from './learning-store';
+import { LearningDatabase, LearningStore, type Submission } from './learning-store';
 import {
   auditAnswers,
   emptyLearningState,
@@ -53,6 +53,18 @@ describe('versioned original content', () => {
   });
 });
 describe('atomic attempts and one-time rewards', () => {
+  it('awards each event once across simultaneous independent database connections', async () => {
+    const first = create();
+    const second = create(first.db.name);
+    await Promise.all([first.start(), second.start()]);
+    for (let i = 0; i < questions.length; i++)
+      await Promise.all([first.submit(answer(i)), second.submit(answer(i))]);
+    await Promise.all([first.complete(), second.complete()]);
+    const state = await first.snapshot();
+    expect(state.attempts).toHaveLength(12);
+    expect(state.rewards).toHaveLength(7);
+    expect(progress(state)).toMatchObject({ solved: 6, xp: 80, complete: true });
+  });
   it('preserves a wrong attempt, orders retries, and gives 80 XP for the completed six-exercise quest', async () => {
     const store = create();
     await store.start();
@@ -107,6 +119,9 @@ describe('atomic attempts and one-time rewards', () => {
     await expect(store.submit(answer())).rejects.toThrow('Start');
     await store.start();
     await expect(store.submit({ ...answer(), questionVersion: 99 })).rejects.toThrow('version');
+    await expect(
+      store.submit({ ...answer(), choice: 'Z' } as unknown as Submission),
+    ).rejects.toThrow('Invalid');
     await expect(store.submit({ ...answer(), reasoning: 'x'.repeat(4001) })).rejects.toThrow(
       'Invalid',
     );

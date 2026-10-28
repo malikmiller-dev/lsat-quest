@@ -305,7 +305,7 @@ function Settings({ theme, onTheme }: { theme: Theme; onTheme: (theme: Theme) =>
             Dependency licenses →
           </a>
         </div>
-        <span className="version-label">FIRST QUEST · v0.2.0</span>
+        <span className="version-label">FIRST QUEST · v0.2.1</span>
       </section>
     </>
   );

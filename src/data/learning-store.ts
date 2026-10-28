@@ -122,6 +122,8 @@ export class LearningStore {
             awardedAt: submittedAt,
           });
         await this.db.sessions.update(LESSON_ID, { activeQuestionId: question.id });
+        // Throwing inside this transaction also rolls back the attempt and XP.
+        await this.ensureBackupFits();
         return attempt;
       },
     );
@@ -152,11 +154,15 @@ export class LearningStore {
           sourceId: LESSON_ID,
           awardedAt: completedAt,
         });
+        await this.ensureBackupFits();
       },
     );
   }
   async exportBackup(): Promise<string> {
     return serializeBackup(await this.snapshot(), this.now());
+  }
+  private async ensureBackupFits(): Promise<void> {
+    serializeBackup(await this.snapshot(), this.now());
   }
   async importBackup(input: string): Promise<LearningState> {
     const incoming = parseBackup(input).data;
@@ -168,6 +174,8 @@ export class LearningStore {
       async () => {
         const current = validateState(await this.snapshot());
         const merged = mergeStates(current, incoming);
+        // Each input can fit while their merged history exceeds the export limit.
+        serializeBackup(merged, this.now());
         await this.db.attempts.bulkPut(merged.attempts);
         await this.db.sessions.bulkPut(merged.sessions);
         await this.db.rewards.bulkPut(merged.rewards);
