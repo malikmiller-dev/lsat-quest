@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-28 - Private preview handoff (documentation only)
+
+- Confirmed the existing owner-only Sites deployment of v0.2.1, saved version 1, and recorded exact publication/source IDs.
+- Corrected the earlier blanket "not deployed" status while retaining the blocked public GitHub/Pages release status.
+- Added a browser acceptance checklist with synthetic-record counts, backup/restore, resume, cross-tab, keyboard, mobile and visual checks; none are reported passed without execution.
+- Documented export/restore when moving between the test address and a future Pages address. No application, data-schema, dependency or educational-content changes; application version remains 0.2.1.
+
 ## 0.2.1 - 2026-10-28 - Local reliability fixes (unpublished)
 
 - Fixed saves, completions and imports that could create a history too large to export. Capacity validation now runs before commit; rejected operations preserve all previous records and rewards.

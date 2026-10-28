@@ -1,5 +1,13 @@
 # Validation record - Slice 1, v0.2.1
 
+## Private preview continuation
+
+On 2026-10-28, Sites confirmed owner-only saved version 1 at [the private test URL](https://lsat-quest-v021-malik-test.yellowwren512.chatgpt.site/lsat-quest/), with deployment status `succeeded`. Exact IDs and pending functional checks are in [PREVIEW_ACCEPTANCE](PREVIEW_ACCEPTANCE.md). This is a separately hosted testing copy; no GitHub Pages deployment is claimed. Its source-byte equivalence has not been checked here.
+
+The original local application remains unchanged at v0.2.1. The 71-test/build results below are retained from the implementation run, not represented as a new execution. This continuation rechecked GitHub lookup (404), CLI authentication (invalid old credential), npm registry access (ENOTFOUND), and browser-tool availability (no usable control tool). No new browser run or visual inspection occurred. `npm run format:check` and `git diff --check` passed for the documentation handoff.
+
+## Application verification run
+
 Run date: 2026-10-28. Node 22.18.0, npm 11.6.0, Python 3.13. Core dependencies still use the documented offline exception. The previous v0.2.0 milestone passed a clean offline npm ci; no dependencies changed in this repair.
 
 | Check                                              | Actual result                                                                         |

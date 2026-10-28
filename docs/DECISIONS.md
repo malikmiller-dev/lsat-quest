@@ -1,5 +1,11 @@
 # Decisions
 
+## 2026-10-28: Reconcile the separate private test deployment
+
+The testing conversation created an owner-only Sites preview of v0.2.1. On continuation, Sites confirmed saved version 1 and a successful deployment at the recorded URL. Preserve that Site and its audience; do not create a duplicate or change access. Record both its separate source commit and the original application commit, without claiming byte equivalence or GitHub publication. See PREVIEW_ACCEPTANCE for exact IDs and observations.
+
+Keep application version 0.2.1 for this documentation-only handoff. No new product slice or unverified behavior is introduced. The prepared acceptance checklist separates functional browser evidence from deployment status and preserves normal study records by using isolated test profiles. Public release still needs browser, dependency, content and GitHub gates. Rechecked GitHub lookup (404), invalid CLI credentials and npm ENOTFOUND; no usable browser-control tool is exposed in this session.
+
 ## 2026-10-28: Preserve exportability and tab-local drafts
 
 Regression tests demonstrated that two valid backups could merge above the export byte limit, and that new answers or completion rewards could also push valid history above its byte/count limits. Validate the resulting serialized state inside the write transaction (or before merged writes), with a typed capacity error. This preserves earlier data and XP instead of acknowledging an action that leaves history unsupported by restore. Existing oversized 0.2.0 histories are not silently truncated; larger-history recovery remains outside this preview.

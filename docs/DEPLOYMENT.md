@@ -1,5 +1,11 @@
 # Publication continuation
 
+## Existing private test preview
+
+[LSAT Quest v0.2.1](https://lsat-quest-v021-malik-test.yellowwren512.chatgpt.site/lsat-quest/) is deployed as an owner-only Sites test copy. Saved version 1 and its successful deployment were confirmed on 2026-10-28; [PREVIEW_ACCEPTANCE](PREVIEW_ACCEPTANCE.md) records the exact source/version/deployment IDs and functional checks still pending. Reuse that Site and preserve its audience if future preview changes are requested. The original repo has no Sites hosting manifest; do not infer that its local branch is already synchronized with the separate hosted source.
+
+GitHub publication and Pages remain the user's required public target. Preserve the preview during that work. Learner records do not transfer between addresses: export from the test site and restore at the Pages site when migrating.
+
 ## Verified access state
 
 The connected GitHub profile identifies `malikmiller-dev` (user ID 13230444). Listing that account's accessible repositories returned no `lsat-quest`. Local `gh auth status` failed: the active `blankcnvs` credential is invalid. Do not push under the old account blindly. The connector can read/write existing repository content but exposes no repository-create or Pages-settings mutation. Browser helpers failed before a usable browser session was available.

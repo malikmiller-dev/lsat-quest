@@ -4,7 +4,7 @@ An independently designed, local-first LSAT study companion, built one complete 
 
 **Current milestone: Slice 1 local preview, v0.2.1.** A lesson on necessary/sufficient conditions, a four-case interactive example, six original provisional exercises, explanations, saved attempts and notes, one-time XP, progress, history, and validated backup/restore. This revision protects open drafts from another tab's updates, retains keyboard focus after submissions/retries, and rejects saves or merges that exceed backup limits. Slice 0 remains on local `main`; this work is on `feat/first-learning-quest`. Neither slice has completed all release gates. AI tutoring, wider curriculum, and official assessment are not implemented.
 
-**Publication status: blocked, not deployed.** See [PROGRESS](docs/PROGRESS.md) for access limitations and verified results. No public repository or Pages URL has been created.
+**Private test preview deployed:** [Open LSAT Quest v0.2.1](https://lsat-quest-v021-malik-test.yellowwren512.chatgpt.site/lsat-quest/). Owner-only deployment is confirmed. Functional browser/visual checks remain pending; use the [preview acceptance checklist](docs/PREVIEW_ACCEPTANCE.md). Public GitHub publication and Pages deployment remain blocked. See [PROGRESS](docs/PROGRESS.md).
 
 ## Run locally
 
