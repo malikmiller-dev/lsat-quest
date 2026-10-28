@@ -1,5 +1,11 @@
 # Decisions
 
+## 2026-10-28: Enforce the dependency release gate
+
+Official advisories include the pinned Vite 7.2.2 and Vitest/@vitest/mocker 4.0.4 versions. Record package-range matches separately from attack prerequisites; the static application is not a hosted development server. Full sources and limitations are in DEPENDENCY_REVIEW.
+
+Add `audit:dependencies` and require it in GitHub CI after install and before artifact publication. Choose a moderate-or-higher failure threshold including development dependencies; low findings still require review. Keep offline functional checks separately runnable. The registry audit failed with ENOTFOUND, so leave dependencies/lockfile unchanged rather than claiming an uninstalled upgrade. This change does not update the private Site or complete the security gate.
+
 ## 2026-10-28: Reconcile the separate private test deployment
 
 The testing conversation created an owner-only Sites preview of v0.2.1. On continuation, Sites confirmed saved version 1 and a successful deployment at the recorded URL. Preserve that Site and its audience; do not create a duplicate or change access. Record both its separate source commit and the original application commit, without claiming byte equivalence or GitHub publication. See PREVIEW_ACCEPTANCE for exact IDs and observations.

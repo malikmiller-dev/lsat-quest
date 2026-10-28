@@ -19,7 +19,9 @@
 
 ## Verification
 
-Private Sites saved version 1 has deployment status `succeeded`, confirmed on 2026-10-28. This verifies publication of that test copy, not browser functionality or source-byte equivalence. Exact deployment/source IDs, access state and pending acceptance checks are in [PREVIEW_ACCEPTANCE](PREVIEW_ACCEPTANCE.md). No browser test feedback has been supplied by the user. This continuation updates release documentation only; application source, dependencies, schema and content remain v0.2.1.
+Latest continuation: added `npm run audit:dependencies` and required it in GitHub CI before artifact publication. A [targeted official-advisory review](DEPENDENCY_REVIEW.md) found installed Vite/Vitest versions in affected ranges, with exploit prerequisites recorded separately. Package upgrades and a full registry audit remain unresolved. App source, schema, content and the private preview are unchanged.
+
+Private Sites saved version 1 has deployment status `succeeded`, confirmed on 2026-10-28. This verifies publication of that test copy, not browser functionality or source-byte equivalence. Exact deployment/source IDs, access state and pending acceptance checks are in [PREVIEW_ACCEPTANCE](PREVIEW_ACCEPTANCE.md). No browser test feedback has been supplied by the user. The prior preview handoff updated documentation only; the latest continuation also changes CI. Application source, installed dependencies, schema and content remain v0.2.1.
 
 `npm run check` passed: 185 source hashes and both compiled dependency copies verified, strict types, zero-warning lint, **71 tests in 6 files**, and a production build. `python -m py_compile e2e/browser_tests.py` passed. Nine new regression tests cover capacity rollback, independent connections, draft preservation, and keyboard focus.
 
@@ -29,13 +31,13 @@ Private Sites saved version 1 has deployment status `succeeded`, confirmed on 20
 
 1. Connected GitHub identity is `malikmiller-dev` (13230444); the latest `malikmiller-dev/lsat-quest` lookup returned 404. Local `gh auth status` still reports an invalid old `blankcnvs` credential.
 2. Available GitHub connector operations cannot create a repository or configure Pages. Browser skill/tool discovery still found no usable browser controls in this session. No GitHub remote is configured in the original repository. The private Sites copy has its own source commit and is not the requested GitHub publication.
-3. npm registry lookup fails with ENOTFOUND. Core dependencies remain cached releases; current dependency/security review cannot be completed here. Dexie and fake-indexeddb were built from official pinned source as a documented local exception.
+3. The registry audit fails with ENOTFOUND. Core dependencies remain cached releases with known advisory-range matches; see DEPENDENCY_REVIEW. Updates and the full security/current-version review cannot be completed here. Dexie and fake-indexeddb were built from official pinned source as a documented local exception.
 4. Loopback socket connections are restricted (WinError 10013). Previous Python Playwright bootstrap stalled in asyncio socketpair; direct Chromium exited 0xC0000022. The current browser suite again failed before execution.
 5. All exercises still need independent educational review. Internal formal checks do not establish prose clarity, suitability, or expert approval.
 
 ## Limits and known gaps
 
-No confirmed critical defect remains in the executed local scope. Real browser rendering, persistence across reloads, native downloads, multi-tab behavior, and hosted behavior require the prepared browser checks. DOM tests are not visual accessibility certification.
+No known functional regression remains in the executed local test scope. Known dependency advisory matches remain unresolved; see DEPENDENCY_REVIEW for scope and applicability. Real browser rendering, persistence across reloads, native downloads, multi-tab behavior, and hosted behavior require the prepared browser checks. DOM tests are not visual accessibility certification.
 
 Backup schema 1 accepts only known question versions, up to 5 MiB and 10,000 attempts. Version 0.2.1 rejects writes or merges that would exceed that contract; it does not automatically repair previously oversized 0.2.0 history. No cloud sync, service worker/offline installation, data deletion UI, AI tutor, exam score prediction, or wider curriculum exists. Clearing site data removes progress unless a backup is restored. XP reflects activity only.
 
@@ -46,6 +48,8 @@ Finish release gates before Slice 2: use [PREVIEW_ACCEPTANCE](PREVIEW_ACCEPTANCE
 Use [DEPLOYMENT](DEPLOYMENT.md) and [CONTENT_REVIEW](CONTENT_REVIEW.md). The next product slice after those gates is competencies and structured curriculum progression.
 
 ## Git handoff
+
+The latest continuation is the subsequent `ci: require dependency audit before publishing artifacts` commit. It follows preview handoff `8fc4729`; use Git history for the latest hash. It has not been pushed or deployed.
 
 Local main contains `cdf60c7` (foundation) and `b8a920f` (blocker/handoff documentation). Initial Slice 1 implementation is `a896074`, with handoff `3513375`; reliability fixes are `df3affa`. The subsequent documentation handoff records the private preview and acceptance checks. Use `git log --oneline --all` for the latest local commit. No original-repository commit has been pushed to GitHub. The separate Sites source commit is recorded in PREVIEW_ACCEPTANCE. The milestone archive includes source, build output, documentation, and a verified Git bundle preserving both local branches.
 

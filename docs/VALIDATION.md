@@ -1,5 +1,13 @@
 # Validation record - Slice 1, v0.2.1
 
+## Dependency-gate continuation
+
+On 2026-10-28, added a required registry audit to GitHub CI and documented targeted official-advisory findings in DEPENDENCY_REVIEW. `npm run check` was executed again and passed: 185 upstream hashes, strict types, zero-warning lint, 71 tests in six files, and the production build. No packages or learning content changed.
+
+Both workflow YAML files parsed successfully; inspection confirmed the required audit occurs after install and before functional checks, and deployment still requires the validation job. Formatting and Git whitespace checks passed. These are local checks, not an Actions execution.
+
+`npm run audit:dependencies -- --fetch-retries=0 --fetch-timeout=10000` exited 1 because the npm advisory endpoint could not resolve registry.npmjs.org (ENOTFOUND). It returned no vulnerability count. `npm run test:e2e` again failed during preview setup with zero tests run. GitHub Actions has not executed this workflow; no new deployment was attempted. This is a working local CI configuration change, not a completed security review or patched dependency installation.
+
 ## Private preview continuation
 
 On 2026-10-28, Sites confirmed owner-only saved version 1 at [the private test URL](https://lsat-quest-v021-malik-test.yellowwren512.chatgpt.site/lsat-quest/), with deployment status `succeeded`. Exact IDs and pending functional checks are in [PREVIEW_ACCEPTANCE](PREVIEW_ACCEPTANCE.md). This is a separately hosted testing copy; no GitHub Pages deployment is claimed. Its source-byte equivalence has not been checked here.
@@ -57,4 +65,4 @@ The suite cannot reach the production preview on this host. Earlier diagnostics 
 
 The educational content and schema remain unchanged. Internal formal audits do not establish independent educational review; all exercises stay provisional. No real learner records are in the repo.
 
-No confirmed critical defect remains in the supported local test scope. Histories already exceeding the old v0.2.0 backup limits are not automatically repaired or truncated. Dependency security/current-stable review, browser/visual testing, authenticated GitHub publication, independent content review, and verified Pages deployment remain open gates.
+No known functional regression remains in the supported local test scope. Known dependency advisory matches remain unresolved; see DEPENDENCY_REVIEW. Histories already exceeding the old v0.2.0 backup limits are not automatically repaired or truncated. Full dependency security/current-stable review, browser/visual testing, authenticated GitHub publication, independent content review, and verified Pages deployment remain open gates.

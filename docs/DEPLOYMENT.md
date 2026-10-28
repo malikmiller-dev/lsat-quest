@@ -32,6 +32,8 @@ Slice 1 is now on local `feat/first-learning-quest`. After main publication and 
 
 ## Workflow design
 
+The validation job now requires `npm run audit:dependencies` immediately after install. It includes development dependencies and fails on moderate-or-higher reports or an unavailable audit request. The job cannot upload its Pages artifact after that failure. See [DEPENDENCY_REVIEW](DEPENDENCY_REVIEW.md) for unresolved findings. Actual execution on GitHub remains unverified.
+
 `ci.yml` runs on PRs and non-main pushes, and is callable by `deploy.yml`. It installs locked dependencies, checks types/lint/tests/build, runs Playwright against the build, and uploads the exact verified `dist/` only for main. `deploy.yml` requires that job before deployment. Non-main manual deploy requests are excluded. Production permissions are isolated to the deploy job.
 
 Sources consulted: [Vite deployment](https://vite.dev/guide/static-deploy.html#github-pages), [GitHub Pages workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages), [reusable workflows](https://docs.github.com/en/actions/sharing-automations/reusing-workflows), [Playwright CI](https://playwright.dev/python/docs/ci).

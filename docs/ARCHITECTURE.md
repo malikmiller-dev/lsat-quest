@@ -53,4 +53,6 @@ All six exercises share the provenance in `domain/learning.ts` and the ledger in
 
 `npm run check` verifies all 185 upstream blob hashes and reproducible compiled dependencies, types, lint, tests, then builds. `build-notices.mjs` includes runtime dependency licenses in the deployable artifact. fake-indexeddb is test-only.
 
+`npm run audit:dependencies` is a separate online gate for runtime and development packages. GitHub CI runs it after install and requires it to pass before artifact publication; moderate-or-higher reports fail the command. The installed versions still require remediation and a full registry audit. See DEPENDENCY_REVIEW for source-backed findings and limits.
+
 The GitHub workflow runs unit/DOM and production-browser tests. Only its validated main artifact can deploy to Pages. A separate owner-only Sites test copy of v0.2.1 is deployed; it does not close the public release gates. See PREVIEW_ACCEPTANCE for its provenance and pending checks. Browser execution and Pages remain unverified due environment restrictions; see VALIDATION. Keep feature work on its branch until release gates pass.

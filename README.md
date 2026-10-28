@@ -26,6 +26,7 @@ npm run preview
 
 ```sh
 npm run check
+npm run audit:dependencies
 python -m pip install -r requirements-test.txt
 python -m playwright install chromium
 npm run test:e2e
@@ -36,6 +37,8 @@ npm run test:e2e
 Dexie and test-only fake-indexeddb use pinned official source builds because npm access is blocked. See [vendor/README.md](vendor/README.md) for hashes, licenses, and rebuild instructions. Other packages use exact cached releases; review/update dependencies before publication.
 
 ## Publish after access is restored
+
+The [targeted dependency review](docs/DEPENDENCY_REVIEW.md) found installed Vite/Vitest versions in published advisory ranges. Upgrades remain pending. The online audit is now required by CI before publication; passing the offline functional checks alone does not satisfy that gate.
 
 The user authorized a public `lsat-quest` repository under the authenticated account `malikmiller-dev`. Recheck repository existence and CLI identity before creation or pushing. Do not overwrite existing work. Follow [DEPLOYMENT](docs/DEPLOYMENT.md).
 

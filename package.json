@@ -18,6 +18,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "python e2e/browser_tests.py",
+    "audit:dependencies": "npm audit --audit-level=moderate --include=dev",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "npm run verify:vendor && npm run typecheck && npm run lint && npm test && npm run build"

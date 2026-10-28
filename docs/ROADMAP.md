@@ -23,4 +23,6 @@ Accessibility basics are required from Slice 0; Slice 14 is additional hardening
 
 ## Next slice acceptance
 
+The existing release workflow now requires an online dependency audit. Known advisory-range matches and the blocked registry scan remain open; see [DEPENDENCY_REVIEW](DEPENDENCY_REVIEW.md). This does not advance Slice 2 or close the existing browser/content/publication gates.
+
 Slice 1 must persist correct and incorrect attempts, prevent duplicate XP, restore backups atomically after validation, retain the exact question version, and label content provenance/review status honestly. Automated tests must cover reload, interrupted flow, duplicate submission, and invalid import. Do not call AI-generated questions independently verified without actual independent review.

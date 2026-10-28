@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-28 - Dependency audit gate (local CI change)
+
+- Added `npm run audit:dependencies`, including development packages and failing for reported vulnerabilities at moderate severity or higher.
+- Required that audit in the GitHub validation job before tests/build and Pages artifact upload; failures are not ignored.
+- Reviewed selected official advisories against installed versions/configuration. Recorded unresolved Vite/Vitest version matches, conditional exposure and minimum fixes for those specific advisories.
+- Registry audit failed with ENOTFOUND. No package upgrade, clean scan or new deployment is claimed. Application version remains 0.2.1.
+
 ## 2026-10-28 - Private preview handoff (documentation only)
 
 - Confirmed the existing owner-only Sites deployment of v0.2.1, saved version 1, and recorded exact publication/source IDs.
