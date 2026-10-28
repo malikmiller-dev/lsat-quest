@@ -22,6 +22,8 @@ gh repo create malikmiller-dev/lsat-quest --public --source=. --remote=origin --
 
 Later work uses focused feature branches and PR validation before merging to main. Do not rewrite history or push personal/private data.
 
+Slice 1 is now on local `feat/first-learning-quest`. After main publication and access recovery, push that branch, open a focused PR, run its full validation, and merge only after browser/content/dependency review. The current source-build exception and content status are documented in `vendor/README.md` and CONTENT_REVIEW. Verify native study backup downloads, restoration into a fresh browser context, persisted exercise history, and the deployed dependency-notices asset in addition to the foundation checks.
+
 ## Workflow design
 
 `ci.yml` runs on PRs and non-main pushes, and is callable by `deploy.yml`. It installs locked dependencies, checks types/lint/tests/build, runs Playwright against the build, and uploads the exact verified `dist/` only for main. `deploy.yml` requires that job before deployment. Non-main manual deploy requests are excluded. Production permissions are isolated to the deploy job.

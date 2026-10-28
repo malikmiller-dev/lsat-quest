@@ -21,7 +21,7 @@ describe('application integration', () => {
   it('renders a truthful foundation with valid navigation targets', () => {
     render(<App />);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Great reasoning');
-    expect(screen.getByText('Foundation preview · Lessons coming next')).toBeInTheDocument();
+    expect(screen.getByText('First quest · Original provisional practice')).toBeInTheDocument();
     for (const link of screen.getAllByRole('link')) {
       const href = link.getAttribute('href')!;
       if (href !== '#main') expect(parseRoute(href)).not.toBeNull();
@@ -29,12 +29,12 @@ describe('application integration', () => {
   });
   it('navigates through the primary action and moves focus to content', async () => {
     render(<App />);
-    await userEvent.click(screen.getByRole('link', { name: 'Explore the learning path' }));
+    await userEvent.click(screen.getByRole('link', { name: 'See the path' }));
     expect(
       await screen.findByRole('heading', { name: 'Start with the foundations.' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('main')).toHaveFocus();
-    expect(screen.getAllByText('Not available yet')).toHaveLength(4);
+    expect(screen.getAllByText('Not available yet')).toHaveLength(3);
     expect(within(screen.getByRole('main')).queryByRole('button')).not.toBeInTheDocument();
     expect(document.title).toBe('Learning path · LSAT Quest');
   });
@@ -93,7 +93,7 @@ describe('application integration', () => {
     window.history.replaceState(null, '', '#/roadmap');
     render(<App />);
     expect(screen.getAllByRole('article')).toHaveLength(16);
-    expect(screen.getByText('SLICE 0 · CURRENT PREVIEW')).toBeInTheDocument();
+    expect(screen.getByText('SLICE 1 · LOCAL PREVIEW')).toBeInTheDocument();
     expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
   });
 });

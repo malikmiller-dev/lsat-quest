@@ -2,6 +2,8 @@
 
 The production build includes or derives styles from the following packages. License text is copied from the installed, locked package distributions. Project-authored code remains UNLICENSED pending an owner decision.
 
+Dexie 4.4.7 and its bundled safari-14-idb-fix 3.0.0 dependency are built locally from pinned upstream source, under Apache-2.0. Original licenses, source hashes, build adaptations, and provenance are retained in `vendor/`. `scripts/build-notices.mjs` includes their full license texts alongside these notices in `public/third-party-notices.txt`, which Vite copies into the deployed artifact. fake-indexeddb 6.2.6 is Apache-2.0 and test-only; its license stays with the vendored source and it is excluded from the production bundle.
+
 ## react 19.2.0
 
 MIT License

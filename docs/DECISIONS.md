@@ -1,5 +1,25 @@
 # Decisions
 
+## 2026-10-28: Continue a local Slice 1 feature branch
+
+After the user requested continuation, rechecked GitHub, npm and browser access. The blockers persisted, but local implementation and database tests were possible. Preserve local main and implement Slice 1 on `feat/first-learning-quest`; retain partial status until review, browser and publication gates pass. This supersedes the earlier local instruction to wait for all Slice 0 gates before starting any Slice 1 work. No wider roadmap expansion is authorized by this exception.
+
+## 2026-10-28: Source-built dependencies with verifiable provenance
+
+Dexie and fake-indexeddb were absent from the offline cache. Retrieve official tagged GitHub sources at pinned commits, preserve licenses and all 185 upstream Git blob hashes, and build minimal ESM distributions with the cached esbuild 0.25.11. Dexie's documented version placeholder and constant-enum source require the adaptations recorded in `vendor/README.md`. The source is unchanged. `.gitattributes` disables line-ending normalization for vendor files to preserve exact hashes.
+
+Use npm `file:` packages with `install-links=true` to avoid unavailable Windows symlink privileges. `npm run verify:vendor` reproduces compiled outputs and checks both tracked and installed copies. This is a transparent local exception, not an assertion that the artifacts are the npm-published distribution. Switch to registry packages, review dependencies and retest when network access returns. Reference: [npm install-links](https://docs.npmjs.com/cli/v11/using-npm/config/#install-links).
+
+## 2026-10-28: Atomic activity history and backup merge
+
+Keep attempts, sessions and rewards in Dexie schema 1. Commit an attempt and eligible reward together. Stable submission IDs handle retries; deterministic event IDs prevent farming. Completion has its own one-time event. Use full-state transactional snapshots and strict validation so import cannot introduce grades, XP, completions or content review labels inconsistent with known versioned records. Merge preserves existing history, rejects conflicting IDs and deduplicates rewards. No replace/delete restore mode is needed. Reference: [Dexie transactions](<https://dexie.org/docs/Dexie/Dexie.transaction()>).
+
+The first-correct reward is 10 XP and completion is 20 XP, at most 80 for this content version. These are product activity rewards, not a psychometric claim. Notes are optional and saved only on submission. Explicitly open IndexedDB before reactive queries so missing storage yields a retryable error rather than indefinite loading.
+
+## 2026-10-28: Provisional educational preview
+
+Provide six original fictional exercises, provenance labels, conceptual references, explanations for each choice, and finite-model logic audits. Keep every item provisional and explicitly identify the absence of independent review. The learner chooses to start provisional practice. The author and automated checks cannot satisfy independent review; that remains a release gate, tracked in CONTENT_REVIEW.
+
 ## 2026-10-28: Static foundation and routing
 
 Use React/TypeScript/Vite and `/lsat-quest/` base, with explicit hash routes. This satisfies static-host refresh without rewriting missing routes. References: [Vite Pages deployment](https://vite.dev/guide/static-deploy.html#github-pages), [GitHub custom workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).

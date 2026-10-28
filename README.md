@@ -2,9 +2,9 @@
 
 An independently designed, local-first LSAT study companion, built one complete vertical slice at a time.
 
-**Current milestone: Slice 0 foundation.** Four working views, responsive navigation, dark/light appearance saved in the browser, and a configured GitHub Actions validation/Pages pipeline. Lessons, questions, XP, study records, AI, and official assessment are **not implemented**.
+**Current milestone: Slice 1 local preview, v0.2.0.** A lesson on necessary/sufficient conditions, a four-case interactive example, six original provisional exercises, explanations, saved attempts and notes, one-time XP, progress, history, and validated backup/restore. Slice 0 remains on local `main`; this work is on `feat/first-learning-quest`. Neither slice has completed all release gates. AI tutoring, wider curriculum, and official assessment are not implemented.
 
-**Publication status: blocked, not deployed.** See [PROGRESS](docs/PROGRESS.md) for exact access limitations and verified test results. Do not assume a Pages URL exists from the intended repository name.
+**Publication status: blocked, not deployed.** See [PROGRESS](docs/PROGRESS.md) for access limitations and verified results. No public repository or Pages URL has been created.
 
 ## Run locally
 
@@ -31,18 +31,22 @@ python -m playwright install chromium
 npm run test:e2e
 ```
 
-`check` runs strict type checking, ESLint, Vitest, and the production build. Browser tests launch the production preview, exercise keyboard/mobile navigation, persistence and blocked storage, check all routes at five widths, and stop the owned preview afterward. They generate ignored screenshots under `test-results/`. Set `LSAT_BROWSER_PATH` only when intentionally using an already installed compatible Chromium binary.
+`check` verifies vendored source/output hashes, strict types, ESLint, Vitest, and the production build. All 62 unit/database/DOM tests pass locally. Ten browser tests are prepared for navigation, persistence, completion, backup downloads/restoration, storage failures, and layout at five widths, but none ran in this restricted environment. Ignored screenshots go under `test-results/`. Set `LSAT_BROWSER_PATH` only when intentionally using an installed compatible Chromium binary.
+
+Dexie and test-only fake-indexeddb use pinned official source builds because npm access is blocked. See [vendor/README.md](vendor/README.md) for hashes, licenses, and rebuild instructions. Other packages use exact cached releases; review/update dependencies before publication.
 
 ## Publish after access is restored
 
-The user authorized a public `lsat-quest` repository under their authenticated account `malikmiller-dev`. Recheck repository existence and CLI identity before running any create/push command. Do not overwrite existing work. Instructions are in [DEPLOYMENT](docs/DEPLOYMENT.md).
+The user authorized a public `lsat-quest` repository under the authenticated account `malikmiller-dev`. Recheck repository existence and CLI identity before creation or pushing. Do not overwrite existing work. Follow [DEPLOYMENT](docs/DEPLOYMENT.md).
 
-Production uses `/lsat-quest/` as its base and hash navigation to keep direct links refreshable on static hosting. Pull requests run validation. Pushes to `main` run validation and upload the checked build before a separate dependent job deploys it. A validation failure prevents deployment. Workflow execution still needs verification on GitHub.
+Production uses `/lsat-quest/` as its base with hash navigation. PRs run validation. Main builds deploy only after validation and browser tests succeed. Workflow execution still needs verification on GitHub. Preserve main and submit this feature branch through a validated PR.
 
 ## Content and privacy
 
-No official questions, copied proprietary assets, credentials, analytics trackers, or personal study records are included. Only an appearance setting is stored in this release. The learning path is explicitly a preview. Original geometric artwork and interface code are created for this project. Third-party dependencies retain their own licenses; no project-wide redistribution license has yet been granted. See [CONTENT_POLICY](docs/CONTENT_POLICY.md).
+No official questions, copied proprietary assets, credentials, analytics trackers, or real study records are included. All six exercises are AI-authored, original, and clearly provisional; formal consistency checks are not independent educational review. See [CONTENT_REVIEW](docs/CONTENT_REVIEW.md).
+
+Study records stay in this browser's IndexedDB. Export JSON from Settings before clearing site data or changing browsers. Restore merges without deleting existing history or duplicating rewards. Notes are saved only on submission. Appearance is a separate localStorage preference. Backups must never be committed. Original code, artwork, and educational text have no project-wide redistribution license yet; dependencies retain their licenses. See [CONTENT_POLICY](docs/CONTENT_POLICY.md).
 
 ## Continue development
 
-Read [AGENTS.md](AGENTS.md), [ARCHITECTURE](docs/ARCHITECTURE.md), [PROGRESS](docs/PROGRESS.md), and [ROADMAP](docs/ROADMAP.md). Slice 1 is the first complete educational loop: necessary/sufficient conditions, exercises, reasoning feedback, attempts, one-time XP, and validated export/restore.
+Read [AGENTS.md](AGENTS.md), [ARCHITECTURE](docs/ARCHITECTURE.md), [PROGRESS](docs/PROGRESS.md), and [ROADMAP](docs/ROADMAP.md). Finish browser/visual verification, dependency review, independent content review, GitHub publication, and deployment before expanding to Slice 2.
