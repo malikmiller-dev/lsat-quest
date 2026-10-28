@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+.env
+.env.*
+!.env.example
+*.local
+*.log
+backups/
+private/
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
