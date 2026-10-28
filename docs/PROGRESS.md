@@ -1,8 +1,18 @@
 # LSAT Quest progress
 
-## Current slice
+**Slice 1 - Partial, v0.2.1.** Public source and automated cloud validation are complete; educational review and hosted public release remain pending.
 
-**Slice 1 - Partial, v0.2.1.** Local implementation and reliability fixes are on `feat/first-learning-quest`; local `main` retains the Slice 0 foundation. A separate owner-only [test preview](https://lsat-quest-v021-malik-test.yellowwren512.chatgpt.site/lsat-quest/) was deployed from the saved v0.2.1 work in the testing conversation. Its deployment is now confirmed through Sites. Both slices remain incomplete against their public release gates; GitHub Pages and independent educational review remain pending.
+## 2026-10-28: Public source and passing cloud validation
+
+The [public repository](https://github.com/malikmiller-dev/lsat-quest) preserves both original branches and commits without force-pushing. [Draft PR #1](https://github.com/malikmiller-dev/lsat-quest/pull/1) contains Slice 1; main retains the foundation. Origin is configured and local branches are synchronized with the published history.
+
+At commit `8d95609ac5ef1ebf5ded029388e268dc9cd3d6e2`, the [dependency repair run](https://github.com/malikmiller-dev/lsat-quest/actions/runs/40764293202) passed on Ubuntu with Node 22.18.0, npm 11.6.0 and Python 3.13. Vite is now 7.3.7, Vitest 4.1.12, and compatible transitive fixes were installed with non-forced `npm audit fix`. The final audit reported **zero vulnerabilities**. Full vendor verification (185 hashes and compiled copies), strict types, zero-warning lint, **71 unit/DOM tests**, production build, formatting, and **all 11 Chromium browser tests** passed.
+
+Browser coverage includes the full quest, reload, native backup download/restore, invalid-import preservation, missing IndexedDB, keyboard focus, mobile navigation, responsive widths, and cross-tab draft preservation. Automated layout assertions are not human visual or accessibility certification. No new hosted deployment was performed. The separate private Sites preview remains unchanged.
+
+The original local network/browser restrictions persist; GitHub Actions supplied the online validation environment. The local installed node_modules are older than the repaired lockfile; reinstall with `npm ci` in a network-enabled environment before relying on local runs. Historical blocked results below describe earlier attempts, not the current cloud result.
+
+Remaining release work: independently review provisional exercises, perform visual review, repair and validate foundation main's dependencies before Pages deployment, configure/verify Pages, and complete broader dependency/current-release review. npm audit is a time-specific registry result, not proof that all dependencies or vendored source are vulnerability-free. Do not advance Slice 2 or merge the draft solely on automated tests.
 
 ## Implemented
 
@@ -17,40 +27,10 @@
 - Original content explicitly marked AI-authored/provisional, with source references and a review ledger.
 - Official pinned dependency sources, upstream licenses/hashes, deterministic build verification, and license notices in the production artifact.
 
-## Verification
-
-Latest continuation: added `npm run audit:dependencies` and required it in GitHub CI before artifact publication. A [targeted official-advisory review](DEPENDENCY_REVIEW.md) found installed Vite/Vitest versions in affected ranges, with exploit prerequisites recorded separately. Package upgrades and a full registry audit remain unresolved. App source, schema, content and the private preview are unchanged.
-
-Private Sites saved version 1 has deployment status `succeeded`, confirmed on 2026-10-28. This verifies publication of that test copy, not browser functionality or source-byte equivalence. Exact deployment/source IDs, access state and pending acceptance checks are in [PREVIEW_ACCEPTANCE](PREVIEW_ACCEPTANCE.md). No browser test feedback has been supplied by the user. The prior preview handoff updated documentation only; the latest continuation also changes CI. Application source, installed dependencies, schema and content remain v0.2.1.
-
-`npm run check` passed: 185 source hashes and both compiled dependency copies verified, strict types, zero-warning lint, **71 tests in 6 files**, and a production build. `python -m py_compile e2e/browser_tests.py` passed. Nine new regression tests cover capacity rollback, independent connections, draft preservation, and keyboard focus.
-
-`npm run test:e2e` failed during setup: **0 tests ran**, because the production preview could not become reachable. Eleven browser tests are prepared. Desktop/mobile visual QA, real-browser reload/download/cross-tab behavior, Actions execution, and Pages remain unverified. See [VALIDATION](VALIDATION.md).
-
-## Blockers
-
-1. Connected GitHub identity is `malikmiller-dev` (13230444); the latest `malikmiller-dev/lsat-quest` lookup returned 404. Local `gh auth status` still reports an invalid old `blankcnvs` credential.
-2. Available GitHub connector operations cannot create a repository or configure Pages. Browser skill/tool discovery still found no usable browser controls in this session. No GitHub remote is configured in the original repository. The private Sites copy has its own source commit and is not the requested GitHub publication.
-3. The registry audit fails with ENOTFOUND. Core dependencies remain cached releases with known advisory-range matches; see DEPENDENCY_REVIEW. Updates and the full security/current-version review cannot be completed here. Dexie and fake-indexeddb were built from official pinned source as a documented local exception.
-4. Loopback socket connections are restricted (WinError 10013). Previous Python Playwright bootstrap stalled in asyncio socketpair; direct Chromium exited 0xC0000022. The current browser suite again failed before execution.
-5. All exercises still need independent educational review. Internal formal checks do not establish prose clarity, suitability, or expert approval.
-
-## Limits and known gaps
-
-No known functional regression remains in the executed local test scope. Known dependency advisory matches remain unresolved; see DEPENDENCY_REVIEW for scope and applicability. Real browser rendering, persistence across reloads, native downloads, multi-tab behavior, and hosted behavior require the prepared browser checks. DOM tests are not visual accessibility certification.
+## Limits
 
 Backup schema 1 accepts only known question versions, up to 5 MiB and 10,000 attempts. Version 0.2.1 rejects writes or merges that would exceed that contract; it does not automatically repair previously oversized 0.2.0 history. No cloud sync, service worker/offline installation, data deletion UI, AI tutor, exam score prediction, or wider curriculum exists. Clearing site data removes progress unless a backup is restored. XP reflects activity only.
 
 ## Immediate next task
 
-Finish release gates before Slice 2: use [PREVIEW_ACCEPTANCE](PREVIEW_ACCEPTANCE.md) to verify the existing private preview; restore authenticated GitHub/registry/browser access; review/update dependencies (replace the temporary source builds with equivalent official registry packages where appropriate); execute all browser tests and desktop/mobile visual checks; independently review the content; publish/verify main; then validate this feature branch through a PR and deploy it. Record actual results. Do not treat the existing private deployment as passing those gates.
-
-Use [DEPLOYMENT](DEPLOYMENT.md) and [CONTENT_REVIEW](CONTENT_REVIEW.md). The next product slice after those gates is competencies and structured curriculum progression.
-
-## Git handoff
-
-The latest continuation is the subsequent `ci: require dependency audit before publishing artifacts` commit. It follows preview handoff `8fc4729`; use Git history for the latest hash. It has not been pushed or deployed.
-
-Local main contains `cdf60c7` (foundation) and `b8a920f` (blocker/handoff documentation). Initial Slice 1 implementation is `a896074`, with handoff `3513375`; reliability fixes are `df3affa`. The subsequent documentation handoff records the private preview and acceptance checks. Use `git log --oneline --all` for the latest local commit. No original-repository commit has been pushed to GitHub. The separate Sites source commit is recorded in PREVIEW_ACCEPTANCE. The milestone archive includes source, build output, documentation, and a verified Git bundle preserving both local branches.
-
-The initial milestone passed a clean offline `npm ci` (323 packages); no dependencies changed in v0.2.1. The latest combined gate passes 71 tests, and formatting/Git whitespace checks pass. Upstream vendor whitespace is preserved intentionally, with source integrity checked against recorded Git blob hashes.
+Validate the final PR head, then address foundation main dependency updates and Pages setup. Complete independent educational and visual review before merging Slice 1. Preserve the existing private preview. See DEPLOYMENT, CONTENT_REVIEW, and PREVIEW_ACCEPTANCE.

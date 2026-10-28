@@ -2,9 +2,9 @@
 
 An independently designed, local-first LSAT study companion, built one complete vertical slice at a time.
 
-**Current milestone: Slice 1 local preview, v0.2.1.** A lesson on necessary/sufficient conditions, a four-case interactive example, six original provisional exercises, explanations, saved attempts and notes, one-time XP, progress, history, and validated backup/restore. This revision protects open drafts from another tab's updates, retains keyboard focus after submissions/retries, and rejects saves or merges that exceed backup limits. Slice 0 remains on local `main`; this work is on `feat/first-learning-quest`. Neither slice has completed all release gates. AI tutoring, wider curriculum, and official assessment are not implemented.
+**Current milestone: Slice 1 draft preview, v0.2.1.** A lesson on necessary/sufficient conditions, a four-case interactive example, six original provisional exercises, explanations, saved attempts and notes, one-time XP, progress, history, and validated backup/restore. This revision protects open drafts from another tab's updates, retains keyboard focus after submissions/retries, and rejects saves or merges that exceed backup limits. Slice 0 remains on `main`; this work is on `feat/first-learning-quest`. Neither slice has completed all release gates. AI tutoring, wider curriculum, and official assessment are not implemented.
 
-**Private test preview deployed:** [Open LSAT Quest v0.2.1](https://lsat-quest-v021-malik-test.yellowwren512.chatgpt.site/lsat-quest/). Owner-only deployment is confirmed. Functional browser/visual checks remain pending; use the [preview acceptance checklist](docs/PREVIEW_ACCEPTANCE.md). Public GitHub publication and Pages deployment remain blocked. See [PROGRESS](docs/PROGRESS.md).
+**Private test preview deployed:** [Open LSAT Quest v0.2.1](https://lsat-quest-v021-malik-test.yellowwren512.chatgpt.site/lsat-quest/). Owner-only deployment is confirmed. Functional browser/visual checks remain pending; use the [preview acceptance checklist](docs/PREVIEW_ACCEPTANCE.md). Source is public in [GitHub](https://github.com/malikmiller-dev/lsat-quest), with [draft PR #1](https://github.com/malikmiller-dev/lsat-quest/pull/1). Pages deployment remains pending. See [PROGRESS](docs/PROGRESS.md).
 
 ## Run locally
 
@@ -32,17 +32,13 @@ python -m playwright install chromium
 npm run test:e2e
 ```
 
-`check` verifies vendored source/output hashes, strict types, ESLint, Vitest, and the production build. All 71 unit/database/DOM tests pass locally. Eleven browser tests are prepared for navigation, persistence, completion, backup downloads/restoration, storage failures, cross-tab drafts, keyboard focus, and layout at five widths, but none ran in this restricted environment. Ignored screenshots go under `test-results/`. Set `LSAT_BROWSER_PATH` only when intentionally using an installed compatible Chromium binary.
+`check` verifies vendored source/output hashes, strict types, ESLint, Vitest, and the production build. [GitHub Actions](https://github.com/malikmiller-dev/lsat-quest/actions/runs/40764293202) passed all 71 unit/DOM tests and all 11 browser tests on repaired commit `8d95609`, including reload, backup restore, keyboard/mobile navigation and cross-tab behavior. The dependency audit reported zero vulnerabilities. See [VALIDATION](docs/VALIDATION.md) for scope and remaining review gates. Local installed dependencies require `npm ci` after updating the lockfile.
 
-Dexie and test-only fake-indexeddb use pinned official source builds because npm access is blocked. See [vendor/README.md](vendor/README.md) for hashes, licenses, and rebuild instructions. Other packages use exact cached releases; review/update dependencies before publication.
+Dexie and test-only fake-indexeddb retain pinned official source builds; see [vendor/README.md](vendor/README.md) for provenance and licenses. Vite 7.3.7, Vitest 4.1.12 and compatible transitive fixes are locked. Audit results do not replace broader security/current-version review.
 
-## Publish after access is restored
+## Publication status
 
-The [targeted dependency review](docs/DEPENDENCY_REVIEW.md) found installed Vite/Vitest versions in published advisory ranges. Upgrades remain pending. The online audit is now required by CI before publication; passing the offline functional checks alone does not satisfy that gate.
-
-The user authorized a public `lsat-quest` repository under the authenticated account `malikmiller-dev`. Recheck repository existence and CLI identity before creation or pushing. Do not overwrite existing work. Follow [DEPLOYMENT](docs/DEPLOYMENT.md).
-
-Production uses `/lsat-quest/` as its base with hash navigation. PRs run validation. Main builds deploy only after validation and browser tests succeed. Workflow execution still needs verification on GitHub. Preserve main and submit this feature branch through a validated PR.
+The public repository preserves the original source history. Slice 1 remains in a draft PR; main retains the foundation and needs a separate dependency repair before Pages. Production uses `/lsat-quest/` with hash navigation. CI requires audit, functional and browser checks before publishing a main artifact. See [DEPLOYMENT](docs/DEPLOYMENT.md). Independent educational review and visual inspection remain pending; no Pages deployment is claimed.
 
 ## Content and privacy
 
@@ -52,4 +48,4 @@ Study records stay in this browser's IndexedDB. Export JSON from Settings before
 
 ## Continue development
 
-Read [AGENTS.md](AGENTS.md), [ARCHITECTURE](docs/ARCHITECTURE.md), [PROGRESS](docs/PROGRESS.md), and [ROADMAP](docs/ROADMAP.md). Finish browser/visual verification, dependency review, independent content review, GitHub publication, and deployment before expanding to Slice 2.
+Read [AGENTS.md](AGENTS.md), [ARCHITECTURE](docs/ARCHITECTURE.md), [PROGRESS](docs/PROGRESS.md), and [ROADMAP](docs/ROADMAP.md). Finish visual verification, broader dependency review, independent content review, and deployment before expanding to Slice 2.
