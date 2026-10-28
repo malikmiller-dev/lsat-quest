@@ -3,10 +3,18 @@ import { Icon, type IconName } from '../components/Icon';
 import { pageNames, parseRoute, type Route } from '../domain/navigation';
 import { roadmap } from '../domain/roadmap';
 import { browserPreferences, readTheme, saveTheme, type Theme } from '../services/appearance';
+import { StudyProvider, useStudy } from './StudyContext';
+import { Quest } from './Quest';
+import { History } from './History';
+import { Backups } from './Backups';
+import { progress } from '../domain/learning';
+import type { LearningStore } from '../data/learning-store';
 
 const navigation: { route: Route; icon: IconName }[] = [
   { route: 'overview', icon: 'home' },
   { route: 'path', icon: 'path' },
+  { route: 'quest', icon: 'book' },
+  { route: 'history', icon: 'layers' },
   { route: 'roadmap', icon: 'layers' },
   { route: 'settings', icon: 'settings' },
 ];
@@ -38,6 +46,8 @@ function JourneyArt() {
 }
 
 function Overview() {
+  const { state, error } = useStudy();
+  const stats = state ? progress(state) : null;
   return (
     <>
       <div className="page-intro">
@@ -60,13 +70,21 @@ function Overview() {
             <em>Stronger thinking.</em>
           </h2>
           <p>
-            Follow a learning path built around understanding the why. LSAT Quest is taking shape,
-            starting with the foundations of Logical Reasoning.
+            Begin with necessary and sufficient conditions. Explore the rule, practice with six
+            original exercises, and revisit the reasoning behind each answer.
           </p>
-          <a className="button primary" href="#/path">
-            Explore the learning path <Icon name="arrow" />
+          <a className="button primary" href="#/quest">
+            {state?.sessions.length ? 'Continue your quest' : 'Start the first quest'}{' '}
+            <Icon name="arrow" />
           </a>
-          <span className="hero-footnote">Foundation preview · Lessons coming next</span>
+          <span className="hero-footnote">First quest · Original provisional practice</span>
+          <p className="study-totals">
+            {stats
+              ? `${stats.solved}/6 exercises solved · ${stats.xp} XP earned`
+              : error
+                ? 'Study progress unavailable. Open the quest to retry storage.'
+                : 'Loading saved progress…'}
+          </p>
         </div>
         <JourneyArt />
       </section>
@@ -94,10 +112,12 @@ function Overview() {
           </div>
           <h3>Understand the why</h3>
           <p>
-            The first lesson will explore necessary and sufficient conditions through original
-            examples.
+            Explore necessary and sufficient conditions with original examples and explanations for
+            every answer choice.
           </p>
-          <span className="status-note">Coming with the first learning quest</span>
+          <a href="#/quest" className="text-link">
+            Open the first lesson <Icon name="arrow" size={16} />
+          </a>
         </article>
         <article className="feature-card">
           <div className="icon-tile blue">
@@ -105,8 +125,8 @@ function Overview() {
           </div>
           <h3>Your journey, your data</h3>
           <p>
-            No account is needed for this preview. Study records and exportable backups are planned
-            for the first quest.
+            No account is needed. Submitted answers stay in this browser, with exportable backups
+            you control.
           </p>
           <a href="#/settings" className="text-link">
             Make yourself at home <Icon name="arrow" size={16} />
@@ -116,11 +136,13 @@ function Overview() {
       <section className="next-card">
         <div className="next-number">01</div>
         <div>
-          <p className="eyebrow">NEXT ON THE BUILD PATH</p>
+          <p className="eyebrow">YOUR FIRST QUEST</p>
           <h3>Necessary vs. sufficient conditions</h3>
           <p>Learn the distinction. Test your reasoning. Understand your answer.</p>
         </div>
-        <span className="badge">In the next release</span>
+        <a className="badge" href="#/quest">
+          Start learning →
+        </a>
       </section>
     </>
   );
@@ -133,7 +155,7 @@ function LearningPath() {
         <p className="eyebrow">THE LEARNING PATH</p>
         <h1>Start with the foundations.</h1>
         <p className="lede">
-          A preview of the journey ahead. Learning activities are not available yet.
+          Start with one complete practice loop. Later curriculum is still planned.
         </p>
       </div>
       <section className="path-banner">
@@ -143,7 +165,7 @@ function LearningPath() {
           <h2>Logical Reasoning foundations</h2>
           <p>Build a language for thinking clearly.</p>
         </div>
-        <span className="badge accent">Planned</span>
+        <span className="badge accent">First quest available</span>
       </section>
       <ol className="learning-list">
         {[
@@ -177,9 +199,15 @@ function LearningPath() {
               <h3>{title}</h3>
               <p>{description}</p>
             </div>
-            <span className="unavailable">
-              <Icon name="lock" size={16} /> Not available yet
-            </span>
+            {i === 0 ? (
+              <a href="#/quest" className="button secondary">
+                Open quest →
+              </a>
+            ) : (
+              <span className="unavailable">
+                <Icon name="lock" size={16} /> Not available yet
+              </span>
+            )}
           </li>
         ))}
       </ol>
@@ -188,8 +216,8 @@ function LearningPath() {
         <div>
           <strong>Progress should mean something.</strong>
           <p>
-            Lessons, saved attempts, and earned XP arrive together in the first complete learning
-            quest. There is no study progress to track in this preview.
+            XP is earned from saved correct answers and quest completion. It records practice
+            activity, not measured mastery or a predicted exam score.
           </p>
         </div>
       </aside>
@@ -207,13 +235,13 @@ function Roadmap() {
       </div>
       <div className="roadmap-list">
         {roadmap.map(([title, detail], i) => (
-          <article className={`roadmap-item ${i === 0 ? 'current' : ''}`} key={title}>
+          <article className={`roadmap-item ${i === 1 ? 'current' : ''}`} key={title}>
             <div className="roadmap-index">
               {i === 0 ? <Icon name="compass" /> : String(i).padStart(2, '0')}
             </div>
             <div>
               <span className="eyebrow">
-                SLICE {i} · {i === 0 ? 'CURRENT PREVIEW' : i === 1 ? 'UP NEXT' : 'PLANNED'}
+                SLICE {i} · {i === 0 ? 'FOUNDATION' : i === 1 ? 'LOCAL PREVIEW' : 'PLANNED'}
               </span>
               <h2>{title}</h2>
               <p>{detail}</p>
@@ -256,35 +284,41 @@ function Settings({ theme, onTheme }: { theme: Theme; onTheme: (theme: Theme) =>
           ))}
         </div>
       </section>
-      <section className="settings-card">
-        <div>
-          <h2>Study data & backups</h2>
-          <p>
-            This release stores your appearance preference only. Attempt history, progress, and
-            backup controls will arrive with the first learning quest.
-          </p>
-        </div>
-        <span className="badge">Coming next</span>
-      </section>
+      <Backups />
       <section className="settings-card">
         <div>
           <h2>About LSAT Quest</h2>
           <p>
-            An independently developed study companion. This foundation preview contains no official
-            test questions, score predictions, or AI tutoring.
+            An independently developed study companion. This preview contains no official test
+            questions, score predictions, or AI tutoring.
           </p>
           <p>
-            LSAT Quest is not affiliated with or endorsed by LSAC. Future original practice will be
-            labeled with its provenance and review status.
+            LSAT Quest is not affiliated with or endorsed by LSAC. Original practice is labeled with
+            its provenance and provisional review status.
           </p>
+          <a
+            className="text-link"
+            href={`${import.meta.env.BASE_URL}third-party-notices.txt`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Dependency licenses →
+          </a>
         </div>
-        <span className="version-label">FOUNDATION · v0.1.0</span>
+        <span className="version-label">FIRST QUEST · v0.2.1</span>
       </section>
     </>
   );
 }
 
-export function App() {
+export function App({ store }: { store?: LearningStore }) {
+  return (
+    <StudyProvider store={store}>
+      <AppShell />
+    </StudyProvider>
+  );
+}
+function AppShell() {
   const [route, setRoute] = useState(() => parseRoute(window.location.hash));
   const [initialPreference] = useState(() => readTheme(browserPreferences));
   const [theme, setTheme] = useState<Theme>(initialPreference.theme);
@@ -383,14 +417,14 @@ export function App() {
               <Icon name="spark" />
             </span>
             <strong>A beginning, with purpose.</strong>
-            <p>You’re exploring the foundation of LSAT Quest.</p>
+            <p>Build your first reasoning habit, one exercise at a time.</p>
             <a href="#/roadmap">
               See what’s coming <Icon name="arrow" size={15} />
             </a>
           </div>
           <div className="sidebar-footer">
             <span>
-              <span className="dot" /> FOUNDATION PREVIEW
+              <span className="dot" /> FIRST QUEST PREVIEW
             </span>
             <button
               className="icon-button"
@@ -424,6 +458,10 @@ export function App() {
             <Overview />
           ) : route === 'path' ? (
             <LearningPath />
+          ) : route === 'quest' ? (
+            <Quest />
+          ) : route === 'history' ? (
+            <History />
           ) : route === 'roadmap' ? (
             <Roadmap />
           ) : route === 'settings' ? (
@@ -443,7 +481,7 @@ export function App() {
           <span>LSAT QUEST</span>
           <p>Independently built. One thoughtful step at a time.</p>
           <a href="#/roadmap">
-            Foundation preview <Icon name="arrow" size={14} />
+            Product roadmap <Icon name="arrow" size={14} />
           </a>
         </footer>
       </div>

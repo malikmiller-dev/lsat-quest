@@ -1,5 +1,275 @@
 @import 'tailwindcss';
 
+.lesson-card,
+.exercise-card,
+.history-card {
+  padding: clamp(22px, 4vw, 38px);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  margin: 22px 0;
+}
+.content-notice {
+  padding: 18px 22px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--peach);
+  border-radius: 10px;
+  margin: 20px 0;
+  color: var(--muted);
+}
+.content-notice strong {
+  color: var(--peach);
+}
+.content-notice p {
+  margin: 8px 0 0;
+  font-size: 0.88rem;
+}
+.lesson-card p {
+  max-width: 78ch;
+}
+.lesson-card h2,
+.exercise-card h2 {
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+.logic-lab {
+  background: var(--raised);
+  border-radius: 12px;
+  padding: 22px;
+  margin: 28px 0;
+}
+.lab-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 30px;
+}
+.lab-controls label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+}
+input[type='checkbox'],
+input[type='radio'] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+.lab-result {
+  margin: 14px 0 0;
+  color: var(--accent);
+  min-height: 3.3em;
+}
+.sources {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+summary {
+  cursor: pointer;
+  padding: 12px 0;
+}
+.sources a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.practice-section {
+  margin-top: 38px;
+}
+.exercise-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 22px 0;
+}
+.exercise-tabs button {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 15px;
+  min-height: 44px;
+}
+.exercise-tabs .selected {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--raised);
+}
+.exercise-card fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.exercise-card legend {
+  font-weight: 600;
+  margin-bottom: 18px;
+  padding: 0;
+}
+.stimulus {
+  padding: 20px;
+  border-left: 3px solid var(--accent);
+  background: var(--raised);
+}
+.answer-options {
+  display: grid;
+  gap: 10px;
+}
+.answer-options label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 17px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  line-height: 1.6;
+}
+.answer-options input {
+  margin-top: 3px;
+}
+.answer-options .chosen {
+  border-color: var(--accent);
+  background: var(--raised);
+}
+.reasoning-label {
+  display: block;
+  margin: 22px 0 10px;
+  font-weight: 600;
+}
+.reasoning-label span {
+  font-weight: 400;
+  color: var(--muted);
+}
+textarea {
+  width: 100%;
+  resize: vertical;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.answer-feedback {
+  margin: 22px 0;
+}
+.answer-feedback h3 {
+  color: var(--accent);
+}
+.answer-feedback dl {
+  margin: 24px 0;
+}
+.answer-feedback dl > div {
+  border-top: 1px solid var(--line);
+  padding: 14px 0;
+}
+.answer-feedback dt {
+  font-weight: 600;
+  line-height: 1.6;
+}
+.answer-feedback dd {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.saved-reasoning {
+  background: var(--raised);
+  padding: 16px 20px;
+  border-radius: 10px;
+}
+.saved-reasoning p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 8px 0 0;
+}
+.practice-actions,
+.backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+.quest-complete {
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 24px;
+  background: var(--raised);
+}
+.quest-complete h3 {
+  font: 1.8rem var(--serif);
+}
+.action-error {
+  color: var(--peach);
+  padding: 14px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.backup-card > div {
+  width: 100%;
+}
+.backup-controls {
+  margin-top: 24px;
+}
+.file-picker {
+  display: grid;
+  gap: 10px;
+  max-width: 100%;
+  color: var(--text);
+}
+.file-picker input {
+  width: 100%;
+  max-width: 320px;
+  min-width: 0;
+}
+.file-picker input::file-selector-button {
+  padding: 10px;
+  margin-right: 10px;
+  background: var(--raised);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.backup-preview {
+  margin: 20px 0;
+}
+.backup-preview button {
+  margin: 0 10px 10px 0;
+}
+.study-totals {
+  color: var(--accent);
+  font-size: 0.9rem;
+  margin-top: 18px;
+}
+.button.secondary {
+  background: var(--raised);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+button:disabled {
+  opacity: 0.55;
+}
+.exercise-card .status-note {
+  display: block;
+  margin-top: 14px;
+}
+@media (max-width: 600px) {
+  .practice-section .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .exercise-tabs button {
+    flex: 1 1 28%;
+    padding: 10px 6px;
+  }
+  .logic-lab {
+    padding: 16px;
+  }
+}
+
 :root {
   font-family: 'Segoe UI', system-ui, sans-serif;
   color-scheme: dark;

@@ -1,0 +1,257 @@
+[
+  {
+    "id": "conditional-01",
+    "version": 1,
+    "title": "What the rule guarantees",
+    "stimulus": "At a fictional arts council, every grant recipient has submitted a project budget. Lena is a grant recipient.",
+    "prompt": "Assuming the statements are true, which conclusion must be true?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "Lena has submitted a project budget.",
+        "explanation": "Receiving a grant is sufficient for having submitted a budget under this rule. The rule and Lena's grant status establish this conclusion."
+      },
+      {
+        "id": "B",
+        "text": "Lena has not submitted a project budget.",
+        "explanation": "This contradicts the stated rule when applied to Lena."
+      },
+      {
+        "id": "C",
+        "text": "The statements leave Lena's budget submission undetermined.",
+        "explanation": "The grant-recipient fact activates the rule, so budget submission is determined."
+      },
+      {
+        "id": "D",
+        "text": "The statements leave Lena's grant-recipient status undetermined.",
+        "explanation": "Lena's grant-recipient status is explicitly given."
+      }
+    ],
+    "answer": "A",
+    "explanation": "Write the rule as grant recipient -> budget submitted. Grant-recipient status is sufficient for budget submission; budget submission is necessary for grant-recipient status. Because Lena satisfies the sufficient condition, the necessary condition must also hold.",
+    "audit": {
+      "variables": ["G", "B"],
+      "rules": [["G", "B"]],
+      "facts": { "G": true },
+      "claims": {
+        "A": { "kind": "value", "variable": "B", "value": true },
+        "B": { "kind": "value", "variable": "B", "value": false },
+        "C": { "kind": "undetermined", "variable": "B" },
+        "D": { "kind": "undetermined", "variable": "G" }
+      }
+    }
+  },
+  {
+    "id": "conditional-02",
+    "version": 1,
+    "title": "When a requirement is missing",
+    "stimulus": "A fictional workshop is open only if a safety officer is present. No safety officer is present now.",
+    "prompt": "Assuming the statements are true, which conclusion must be true now?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "The workshop is open.",
+        "explanation": "An open workshop without a safety officer would violate the rule."
+      },
+      {
+        "id": "B",
+        "text": "The workshop is not open.",
+        "explanation": "The necessary condition is absent. The sufficient condition therefore cannot hold."
+      },
+      {
+        "id": "C",
+        "text": "Whether the workshop is open cannot be determined.",
+        "explanation": "The contrapositive determines its status: no officer -> not open."
+      },
+      {
+        "id": "D",
+        "text": "A safety officer is present.",
+        "explanation": "This contradicts the second statement."
+      }
+    ],
+    "answer": "B",
+    "explanation": "Open only if officer present means open -> officer present. Reverse the order and negate both conditions to form the contrapositive: no officer -> not open. A requirement is not optional when the original rule is assumed true.",
+    "audit": {
+      "variables": ["O", "S"],
+      "rules": [["O", "S"]],
+      "facts": { "S": false },
+      "claims": {
+        "A": { "kind": "value", "variable": "O", "value": true },
+        "B": { "kind": "value", "variable": "O", "value": false },
+        "C": { "kind": "undetermined", "variable": "O" },
+        "D": { "kind": "value", "variable": "S", "value": true }
+      }
+    }
+  },
+  {
+    "id": "conditional-03",
+    "version": 1,
+    "title": "An effect does not identify its trigger",
+    "stimulus": "In a fictional sensor system, if smoke is detected, an alarm activates. The alarm has activated. No other rules about the system are given.",
+    "prompt": "Which statement correctly describes what follows about smoke detection?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "Smoke was definitely detected.",
+        "explanation": "This reverses the rule. The rule does not say smoke detection is the only possible trigger."
+      },
+      {
+        "id": "B",
+        "text": "Smoke was definitely not detected.",
+        "explanation": "Smoke detection is compatible with an activated alarm. Nothing rules it out."
+      },
+      {
+        "id": "C",
+        "text": "Smoke detection cannot be determined from these statements.",
+        "explanation": "Both smoke detection and no smoke detection are consistent with the activated alarm and the one-way rule."
+      },
+      {
+        "id": "D",
+        "text": "The alarm has not activated.",
+        "explanation": "This contradicts the observation in the stimulus."
+      }
+    ],
+    "answer": "C",
+    "explanation": "Smoke detected -> alarm activated does not establish alarm activated -> smoke detected. The necessary condition being true leaves the sufficient condition unresolved. This is a logical rule for the fictional exercise, not advice about real alarm equipment.",
+    "audit": {
+      "variables": ["S", "A"],
+      "rules": [["S", "A"]],
+      "facts": { "A": true },
+      "claims": {
+        "A": { "kind": "value", "variable": "S", "value": true },
+        "B": { "kind": "value", "variable": "S", "value": false },
+        "C": { "kind": "undetermined", "variable": "S" },
+        "D": { "kind": "value", "variable": "A", "value": false }
+      }
+    }
+  },
+  {
+    "id": "conditional-04",
+    "version": 1,
+    "title": "A requirement is not a guarantee",
+    "stimulus": "Anyone who enters a fictional archive has completed orientation. Noor has completed orientation. No other information about Noor's entry is given.",
+    "prompt": "Which statement is supported by the information?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "Noor has definitely entered the archive.",
+        "explanation": "Completing a necessary condition does not guarantee entry. That would reverse the rule."
+      },
+      {
+        "id": "B",
+        "text": "Noor has definitely not entered the archive.",
+        "explanation": "Entry is possible under these facts; no statement excludes it."
+      },
+      {
+        "id": "C",
+        "text": "Noor has not completed orientation.",
+        "explanation": "The stimulus explicitly says Noor completed orientation."
+      },
+      {
+        "id": "D",
+        "text": "Whether Noor entered the archive remains undetermined.",
+        "explanation": "Noor may or may not have entered. Both possibilities satisfy entry -> orientation completed."
+      }
+    ],
+    "answer": "D",
+    "explanation": "The rule is entry -> orientation completed. Orientation is necessary for entry, not sufficient on the information given. Meeting a requirement is compatible with an outcome, but does not by itself establish that outcome.",
+    "audit": {
+      "variables": ["E", "O"],
+      "rules": [["E", "O"]],
+      "facts": { "O": true },
+      "claims": {
+        "A": { "kind": "value", "variable": "E", "value": true },
+        "B": { "kind": "value", "variable": "E", "value": false },
+        "C": { "kind": "value", "variable": "O", "value": false },
+        "D": { "kind": "undetermined", "variable": "E" }
+      }
+    }
+  },
+  {
+    "id": "conditional-05",
+    "version": 1,
+    "title": "The missing trigger",
+    "stimulus": "In a fictional file system, every archived file is encrypted. File K is not archived. No further facts about encryption are provided.",
+    "prompt": "What can be concluded about File K?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "Its encryption status cannot be determined.",
+        "explanation": "The rule constrains archived files. It allows a non-archived file to be either encrypted or unencrypted."
+      },
+      {
+        "id": "B",
+        "text": "It is definitely unencrypted.",
+        "explanation": "This negates both parts without reversing them: the inverse error."
+      },
+      {
+        "id": "C",
+        "text": "It is definitely encrypted.",
+        "explanation": "Encryption is possible, but the facts do not guarantee it for File K."
+      },
+      {
+        "id": "D",
+        "text": "It is archived.",
+        "explanation": "This contradicts File K's stated status."
+      }
+    ],
+    "answer": "A",
+    "explanation": "Archived -> encrypted does not imply not archived -> not encrypted. When the sufficient condition is absent, this rule alone says nothing decisive about the necessary condition. The valid contrapositive instead begins with not encrypted.",
+    "audit": {
+      "variables": ["A", "E"],
+      "rules": [["A", "E"]],
+      "facts": { "A": false },
+      "claims": {
+        "A": { "kind": "undetermined", "variable": "E" },
+        "B": { "kind": "value", "variable": "E", "value": false },
+        "C": { "kind": "value", "variable": "E", "value": true },
+        "D": { "kind": "value", "variable": "A", "value": true }
+      }
+    }
+  },
+  {
+    "id": "conditional-06",
+    "version": 1,
+    "title": "Connect two conditions",
+    "stimulus": "In a fictional club, every member has library access. Anyone with library access has a valid card.",
+    "prompt": "Which additional rule must hold?",
+    "choices": [
+      {
+        "id": "A",
+        "text": "Every valid-card holder is a member.",
+        "explanation": "This reverses the direction of the combined rules. A valid-card holder need not be a member."
+      },
+      {
+        "id": "B",
+        "text": "Every member has a valid card.",
+        "explanation": "Membership guarantees access, which guarantees a valid card. The two arrows can be connected in order."
+      },
+      {
+        "id": "C",
+        "text": "Anyone who is not a member lacks a valid card.",
+        "explanation": "This is the inverse of the combined rule. Non-members may still hold valid cards."
+      },
+      {
+        "id": "D",
+        "text": "Every valid-card holder has library access.",
+        "explanation": "This reverses the second rule. A valid card is a requirement for access, not a guarantee of it."
+      }
+    ],
+    "answer": "B",
+    "explanation": "Member -> library access and library access -> valid card combine to give member -> valid card. Connect arrows only when the conclusion of one matches the condition of the next. The reverse chain is not supplied.",
+    "audit": {
+      "variables": ["M", "L", "V"],
+      "rules": [
+        ["M", "L"],
+        ["L", "V"]
+      ],
+      "facts": {},
+      "claims": {
+        "A": { "kind": "implies", "from": "V", "to": "M" },
+        "B": { "kind": "implies", "from": "M", "to": "V" },
+        "C": { "kind": "implies", "from": "!M", "to": "!V" },
+        "D": { "kind": "implies", "from": "V", "to": "L" }
+      }
+    }
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "name": "dexie",
+  "version": "4.4.7",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./src/public/index.d.ts",
+  "license": "Apache-2.0",
+  "exports": { ".": { "types": "./src/public/index.d.ts", "default": "./dist/index.js" } }
+}
