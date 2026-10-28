@@ -4,7 +4,7 @@ An independently designed, local-first LSAT study companion, built one complete 
 
 **Current milestone: Slice 0 foundation.** Four working views, responsive navigation, dark/light appearance saved in the browser, and a configured GitHub Actions validation/Pages pipeline. Lessons, questions, XP, study records, AI, and official assessment are **not implemented**.
 
-**Publication status: blocked, not deployed.** See [PROGRESS](docs/PROGRESS.md) for exact access limitations and verified test results. Do not assume a Pages URL exists from the intended repository name.
+**Publication status: public source; foundation cloud checks pass; Pages deployment pending.** See [PROGRESS](docs/PROGRESS.md) for current release status and verified test results. Do not assume a Pages URL exists from the intended repository name.
 
 ## Run locally
 
@@ -33,11 +33,11 @@ npm run test:e2e
 
 `check` runs strict type checking, ESLint, Vitest, and the production build. Browser tests launch the production preview, exercise keyboard/mobile navigation, persistence and blocked storage, check all routes at five widths, and stop the owned preview afterward. They generate ignored screenshots under `test-results/`. Set `LSAT_BROWSER_PATH` only when intentionally using an already installed compatible Chromium binary.
 
-## Publish after access is restored
+## Publication
 
-The user authorized a public `lsat-quest` repository under their authenticated account `malikmiller-dev`. Recheck repository existence and CLI identity before running any create/push command. Do not overwrite existing work. Instructions are in [DEPLOYMENT](docs/DEPLOYMENT.md).
+The [public repository](https://github.com/malikmiller-dev/lsat-quest) preserves the original history. [Foundation validation](https://github.com/malikmiller-dev/lsat-quest/actions/runs/40765762878) passed 27 unit/DOM tests, all seven browser tests, types/lint/build/formatting and the dependency audit (zero reported vulnerabilities). Vite is 7.3.7 and Vitest 4.1.12 with compatible transitive fixes.
 
-Production uses `/lsat-quest/` as its base and hash navigation to keep direct links refreshable on static hosting. Pull requests run validation. Pushes to `main` run validation and upload the checked build before a separate dependent job deploys it. A validation failure prevents deployment. Workflow execution still needs verification on GitHub.
+Pages is configured for GitHub Actions. Main deploys only after audit and functional/browser checks; deployment/hosted inspection remain pending. See [DEPLOYMENT](docs/DEPLOYMENT.md). The learning activity lives separately in [draft PR #1](https://github.com/malikmiller-dev/lsat-quest/pull/1) pending independent content and visual review.
 
 ## Content and privacy
 
