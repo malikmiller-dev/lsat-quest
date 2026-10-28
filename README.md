@@ -2,9 +2,9 @@
 
 An independently designed, local-first LSAT study companion, built one complete vertical slice at a time.
 
-**Current milestone: Slice 0 foundation.** Four working views, responsive navigation, dark/light appearance saved in the browser, and a configured GitHub Actions validation/Pages pipeline. Lessons, questions, XP, study records, AI, and official assessment are **not implemented**.
+**Current milestone: Slice 1 draft preview, v0.2.1.** A lesson on necessary/sufficient conditions, a four-case interactive example, six original provisional exercises, explanations, saved attempts and notes, one-time XP, progress, history, and validated backup/restore. This revision protects open drafts from another tab's updates, retains keyboard focus after submissions/retries, and rejects saves or merges that exceed backup limits. Slice 0 remains on `main`; this work is on `feat/first-learning-quest`. Neither slice has completed all release gates. AI tutoring, wider curriculum, and official assessment are not implemented.
 
-**Publication status: blocked, not deployed.** See [PROGRESS](docs/PROGRESS.md) for exact access limitations and verified test results. Do not assume a Pages URL exists from the intended repository name.
+**Private test preview deployed:** [Open LSAT Quest v0.2.1](https://lsat-quest-v021-malik-test.yellowwren512.chatgpt.site/lsat-quest/). Owner-only deployment is confirmed. Functional browser/visual checks remain pending; use the [preview acceptance checklist](docs/PREVIEW_ACCEPTANCE.md). Source is public in [GitHub](https://github.com/malikmiller-dev/lsat-quest), with [draft PR #1](https://github.com/malikmiller-dev/lsat-quest/pull/1). Pages deployment remains pending. See [PROGRESS](docs/PROGRESS.md).
 
 ## Run locally
 
@@ -26,23 +26,26 @@ npm run preview
 
 ```sh
 npm run check
+npm run audit:dependencies
 python -m pip install -r requirements-test.txt
 python -m playwright install chromium
 npm run test:e2e
 ```
 
-`check` runs strict type checking, ESLint, Vitest, and the production build. Browser tests launch the production preview, exercise keyboard/mobile navigation, persistence and blocked storage, check all routes at five widths, and stop the owned preview afterward. They generate ignored screenshots under `test-results/`. Set `LSAT_BROWSER_PATH` only when intentionally using an already installed compatible Chromium binary.
+`check` verifies vendored source/output hashes, strict types, ESLint, Vitest, and the production build. [GitHub Actions](https://github.com/malikmiller-dev/lsat-quest/actions/runs/40764293202) passed all 71 unit/DOM tests and all 11 browser tests on repaired commit `8d95609`, including reload, backup restore, keyboard/mobile navigation and cross-tab behavior. The dependency audit reported zero vulnerabilities. See [VALIDATION](docs/VALIDATION.md) for scope and remaining review gates. Local installed dependencies require `npm ci` after updating the lockfile.
 
-## Publish after access is restored
+Dexie and test-only fake-indexeddb retain pinned official source builds; see [vendor/README.md](vendor/README.md) for provenance and licenses. Vite 7.3.7, Vitest 4.1.12 and compatible transitive fixes are locked. Audit results do not replace broader security/current-version review.
 
-The user authorized a public `lsat-quest` repository under their authenticated account `malikmiller-dev`. Recheck repository existence and CLI identity before running any create/push command. Do not overwrite existing work. Instructions are in [DEPLOYMENT](docs/DEPLOYMENT.md).
+## Publication status
 
-Production uses `/lsat-quest/` as its base and hash navigation to keep direct links refreshable on static hosting. Pull requests run validation. Pushes to `main` run validation and upload the checked build before a separate dependent job deploys it. A validation failure prevents deployment. Workflow execution still needs verification on GitHub.
+The public repository preserves the original source history. Slice 1 remains in a draft PR; main retains the foundation and needs a separate dependency repair before Pages. Production uses `/lsat-quest/` with hash navigation. CI requires audit, functional and browser checks before publishing a main artifact. See [DEPLOYMENT](docs/DEPLOYMENT.md). Independent educational review and visual inspection remain pending; no Pages deployment is claimed.
 
 ## Content and privacy
 
-No official questions, copied proprietary assets, credentials, analytics trackers, or personal study records are included. Only an appearance setting is stored in this release. The learning path is explicitly a preview. Original geometric artwork and interface code are created for this project. Third-party dependencies retain their own licenses; no project-wide redistribution license has yet been granted. See [CONTENT_POLICY](docs/CONTENT_POLICY.md).
+No official questions, copied proprietary assets, credentials, analytics trackers, or real study records are included. All six exercises are AI-authored, original, and clearly provisional; formal consistency checks are not independent educational review. See [CONTENT_REVIEW](docs/CONTENT_REVIEW.md).
+
+Study records stay in this browser's IndexedDB. Export JSON from Settings before clearing site data or changing browsers. Restore merges without deleting existing history or duplicating rewards. Notes are saved only on submission. Appearance is a separate localStorage preference. Backups must never be committed. Original code, artwork, and educational text have no project-wide redistribution license yet; dependencies retain their licenses. See [CONTENT_POLICY](docs/CONTENT_POLICY.md).
 
 ## Continue development
 
-Read [AGENTS.md](AGENTS.md), [ARCHITECTURE](docs/ARCHITECTURE.md), [PROGRESS](docs/PROGRESS.md), and [ROADMAP](docs/ROADMAP.md). Slice 1 is the first complete educational loop: necessary/sufficient conditions, exercises, reasoning feedback, attempts, one-time XP, and validated export/restore.
+Read [AGENTS.md](AGENTS.md), [ARCHITECTURE](docs/ARCHITECTURE.md), [PROGRESS](docs/PROGRESS.md), and [ROADMAP](docs/ROADMAP.md). Finish visual verification, broader dependency review, independent content review, and deployment before expanding to Slice 2.

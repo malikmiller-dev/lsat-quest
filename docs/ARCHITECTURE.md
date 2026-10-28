@@ -1,27 +1,58 @@
 # Architecture
 
-## Foundation
+## Runtime and views
 
-React with strict TypeScript, Vite production bundling, Tailwind theme/utility styles plus semantic CSS, and browser-native hash routing. Local component state is sufficient for four views. All built files are static. No server, authentication, database service, or API is required.
+React, strict TypeScript, Vite, Tailwind tokens/semantic CSS, and hash routes under `/lsat-quest/`. The output is static; no server, account, external API, or AI inference is required.
 
-## Implemented boundaries
+- `app/App.tsx`: shell, overview/path/roadmap/settings.
+- `app/StudyContext.tsx`: injected database service, reactive snapshots, loading/error/retry. Explicit database opening detects unavailable IndexedDB before subscribing.
+- `app/Quest.tsx`: lesson, interactive example, submissions and feedback.
+- `app/History.tsx`: reproducible versioned attempts and submitted notes.
+- `app/Backups.tsx`: export, validation preview, explicit merge action.
+- `domain/learning.ts`: questions, provenance, progress/reward policy, finite-model content checks.
+- `domain/backup.ts`: strict schema/relationship validation and conflict-aware merge.
+- `data/learning-store.ts`: all learning persistence and transactions.
+- `services/appearance.ts`: recoverable localStorage preference.
+- `content/conditional-v1.json`: immutable original exercise version 1.
+- `vendor/`: pinned official-source Dexie/fake-indexeddb/Safari fix; see its README.
+- `scripts/`: source/build integrity verification and production license notices.
 
-- `app/App.tsx`: shell and foundation pages; split by feature when the first real learning flow is added.
-- `components/Icon.tsx`: original inline SVG icon component.
-- `domain/navigation.ts`: route parsing and names; unknown routes render a recoverable not-found screen.
-- `domain/roadmap.ts`: product feature roadmap, not learner progress.
-- `services/appearance.ts`: versioned preference read/write with explicit blocked-storage recovery.
-- `styles.css`: shared tokens, dark/light palettes, responsive layout, keyboard focus and reduced-motion behavior.
-- `e2e/browser_tests.py`: Playwright tests against the production build.
+## Persistence
 
-## Persistence contract
+`localStorage['lsat-quest:appearance:v1']` stores dark/light separately from study backups.
 
-`localStorage['lsat-quest:appearance:v1']` is either `dark` or `light`. Missing or invalid data yields dark. Read/write exceptions do not break the app and surface a visible notice. No study data exists in Slice 0. Clearing browser storage removes this preference.
+Dexie database `lsat-quest-learning`, schema version 1:
 
-## Hosting
+| Table    | Key and purpose                                                                                                                          |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| attempts | Submission UUID; question ID/version, choice, optional reasoning, result, timestamp, review status. Never overwrite a different attempt. |
+| sessions | Lesson/version ID; start, active exercise, optional completion time.                                                                     |
+| rewards  | Deterministic event ID; amount, supporting attempt/lesson ID, award time.                                                                |
 
-Vite base is `/lsat-quest/`. Routes use fragments (`#/settings`) so refresh requests the same static index. CI is reusable by the deploy workflow. Only a validated main-branch artifact can reach the deploy job. Production runtime has no dependencies on Node/Python; those are build/test tools.
+A read snapshot spans all three tables. Submission and its first-correct reward commit in one write transaction. Retrying the identical submission ID is idempotent; mismatched data for that ID is rejected. Timestamps are monotonic within this database even under a repeated or backward-moving device clock. Completion and its one-time reward are also atomic. UI feedback follows successful persistence.
 
-## Planned boundaries, introduced only when needed
+Reactive queries reflect committed records. The service owns database operations; UI state holds drafts, the current tab's selected exercise/reviewed attempt, and action status. Another tab's writes update counters without replacing the open draft. The stored active question is read when the practice view mounts; later navigation in this tab updates both its local selection and the shared resume point. Unsubmitted choices/notes are not autosaved and do not survive leaving the exercise or reloading. After a successful submission, focus moves to the feedback heading; retry moves it to the first answer.
 
-Curriculum/content provenance, question versions/attempts, tutoring, memory scheduling, evidence-based mastery, rewards, official-assessment adapter, and backup/settings. Slice 1 introduces IndexedDB/Dexie with schema versioning and transaction-safe attempt/reward writes. AI is deferred to Slice 8; do not configure credentials or call providers during foundation work.
+## Backup contract
+
+Schema 1 JSON contains a format marker, export timestamp, and all three tables. Validate keys, record limits, dates, known question versions, grades against versioned keys, unique IDs, event-to-reward relationships, and completion evidence before mutation.
+
+Restore merges attempts by ID, rejects conflicting copies, retains existing active exercise, takes the earliest session start/completion, and deduplicates rewards by educational event. Revalidate the merged state, then write everything in one transaction. Read/validation/write failures leave existing study records intact. Empty backups are valid. No deletion or replacement of history occurs.
+
+Supported backup limit: 5 MiB / 10,000 attempts. Before a submission or completion transaction commits, serialize and validate its resulting snapshot. A merge is also checked after combining the two valid inputs, before any writes. Capacity failure throws `BackupCapacityError`, rolls back every change, and leaves the previous exportable state intact. The interface identifies the limit and keeps the answer draft. UTF-8 byte length is measured on the actual serialized backup. This adds a bounded full-history validation inside each write transaction; a larger history design will need a different export strategy.
+
+Previously oversized histories from 0.2.0 are not automatically truncated or repaired. They remain outside the supported backup contract. Future versions need explicit migrations and retained question versions; never reinterpret old attempts against changed answer keys.
+
+## Content and rewards
+
+All six exercises share the provenance in `domain/learning.ts` and the ledger in CONTENT_REVIEW. They remain provisional until independent review. Internal finite-model checks verify the encoded formal statements, not educational quality or accurate translation from prose.
+
+10 XP once per first correct question/version and 20 once per completed lesson/version. Current maximum 80. No inferred mastery, calibrated difficulty, time estimate based on performance, or predicted LSAT score.
+
+## Build and hosting
+
+`npm run check` verifies all 185 upstream blob hashes and reproducible compiled dependencies, types, lint, tests, then builds. `build-notices.mjs` includes runtime dependency licenses in the deployable artifact. fake-indexeddb is test-only.
+
+`npm run audit:dependencies` is a separate online gate for runtime and development packages. GitHub CI runs it after install and requires it to pass before artifact publication; moderate-or-higher reports fail the command. The repaired feature lockfile passed the registry audit with zero vulnerabilities on 2026-10-28; foundation main still needs its own repair. See DEPENDENCY_REVIEW for source-backed findings and limits.
+
+The GitHub workflow runs unit/DOM and production-browser tests. Only its validated main artifact can deploy to Pages. A separate owner-only Sites test copy of v0.2.1 is deployed; it does not close the public release gates. See PREVIEW_ACCEPTANCE for its provenance and pending checks. All 11 production-browser tests passed in GitHub Actions; Pages and human visual inspection remain unverified. See VALIDATION. Keep feature work on its branch until release gates pass.

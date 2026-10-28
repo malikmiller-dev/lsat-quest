@@ -1,32 +1,82 @@
-# Validation record — Slice 0
+# Validation record - Slice 1, v0.2.1
 
-Run date: 2026-10-28. Local Node 22.18.0, npm 11.6.0, Python 3.13. Cached dependencies are locked in package-lock.json; current dependency installation/security review remains blocked.
+## 2026-10-28: Public source and passing cloud validation
 
-| Check                                    | Actual result                                                                            |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `npm run typecheck`                      | Passed, strict TypeScript                                                                |
-| `npm run lint`                           | Passed, zero warnings                                                                    |
-| `npm test`                               | Passed: 3 files, 27 tests                                                                |
-| `npm run build`                          | Passed: 33 transformed modules, static `dist/` produced                                  |
-| `npm run check`                          | Passed: complete combined gate after integration-test fixes                              |
-| `npm run test:e2e`                       | Blocked during setup; 0 browser tests ran                                                |
-| Direct HTTP preview request              | Blocked: WinError 10013 on loopback socket connection                                    |
-| Python Playwright bootstrap diagnosis    | Timed out inside asyncio socketpair creation; bounded diagnostic exited after 15 seconds |
-| Direct Node Playwright launch            | Failed: Chromium process exited 3221225506 (0xC0000022)                                  |
-| Desktop/mobile screenshots and visual QA | Not executed; no screenshots were produced                                               |
-| GitHub Actions                           | Not executed; repository publication blocked                                             |
-| GitHub Pages                             | Not deployed, not verified                                                               |
+The [public repository](https://github.com/malikmiller-dev/lsat-quest) preserves both original branches and commits without force-pushing. [Draft PR #1](https://github.com/malikmiller-dev/lsat-quest/pull/1) contains Slice 1; main retains the foundation. Origin is configured and local branches are synchronized with the published history.
 
-## Test coverage that passed
+At commit `8d95609ac5ef1ebf5ded029388e268dc9cd3d6e2`, the [dependency repair run](https://github.com/malikmiller-dev/lsat-quest/actions/runs/40764293202) passed on Ubuntu with Node 22.18.0, npm 11.6.0 and Python 3.13. Vite is now 7.3.7, Vitest 4.1.12, and compatible transitive fixes were installed with non-forced `npm audit fix`. The final audit reported **zero vulnerabilities**. Full vendor verification (185 hashes and compiled copies), strict types, zero-warning lint, **71 unit/DOM tests**, production build, formatting, and **all 11 Chromium browser tests** passed.
 
-- 14 route-parser cases: overview aliases, supported fragment routes, and unknown/malicious-looking fragments.
-- 5 persistence cases: default, saved light preference, corrupt preference, round-trip changes, read/write failures.
-- 8 React integration cases: real rendered navigation, primary-action routing/focus, remount persistence, write failure, read failure, not-found recovery, menu Escape/focus, truthful roadmap states.
+Browser coverage includes the full quest, reload, native backup download/restore, invalid-import preservation, missing IndexedDB, keyboard focus, mobile navigation, responsive widths, and cross-tab draft preservation. Automated layout assertions are not human visual or accessibility certification. No new hosted deployment was performed. The separate private Sites preview remains unchanged.
 
-## Browser suite prepared but unverified
+The original local network/browser restrictions persist; GitHub Actions supplied the online validation environment. The local installed node_modules are older than the repaired lockfile; reinstall with `npm ci` in a network-enabled environment before relying on local runs. Historical blocked results below describe earlier attempts, not the current cloud result.
 
-Seven Playwright tests target the production build: navigation/deep-link refresh, theme reload/reopen, denied storage, keyboard skip link, mobile menu, all four routes at widths 320/390/768/1024/1440, and base-path assets/unavailable controls. No passed browser result is implied by their presence.
+Remaining release work: independently review provisional exercises, perform visual review, repair and validate foundation main's dependencies before Pages deployment, configure/verify Pages, and complete broader dependency/current-release review. npm audit is a time-specific registry result, not proof that all dependencies or vendored source are vulnerability-free. Do not advance Slice 2 or merge the draft solely on automated tests.
+
+## Historical record (before public dependency repair)
+
+## Dependency-gate continuation
+
+On 2026-10-28, added a required registry audit to GitHub CI and documented targeted official-advisory findings in DEPENDENCY_REVIEW. `npm run check` was executed again and passed: 185 upstream hashes, strict types, zero-warning lint, 71 tests in six files, and the production build. No packages or learning content changed.
+
+Both workflow YAML files parsed successfully; inspection confirmed the required audit occurs after install and before functional checks, and deployment still requires the validation job. Formatting and Git whitespace checks passed. These are local checks, not an Actions execution.
+
+`npm run audit:dependencies -- --fetch-retries=0 --fetch-timeout=10000` exited 1 because the npm advisory endpoint could not resolve registry.npmjs.org (ENOTFOUND). It returned no vulnerability count. `npm run test:e2e` again failed during preview setup with zero tests run. GitHub Actions has not executed this workflow; no new deployment was attempted. This is a working local CI configuration change, not a completed security review or patched dependency installation.
+
+## Private preview continuation
+
+On 2026-10-28, Sites confirmed owner-only saved version 1 at [the private test URL](https://lsat-quest-v021-malik-test.yellowwren512.chatgpt.site/lsat-quest/), with deployment status `succeeded`. Exact IDs and pending functional checks are in [PREVIEW_ACCEPTANCE](PREVIEW_ACCEPTANCE.md). This is a separately hosted testing copy; no GitHub Pages deployment is claimed. Its source-byte equivalence has not been checked here.
+
+The original local application remains unchanged at v0.2.1. The 71-test/build results below are retained from the implementation run, not represented as a new execution. This continuation rechecked GitHub lookup (404), CLI authentication (invalid old credential), npm registry access (ENOTFOUND), and browser-tool availability (no usable control tool). No new browser run or visual inspection occurred. `npm run format:check` and `git diff --check` passed for the documentation handoff.
+
+## Application verification run
+
+Run date: 2026-10-28. Node 22.18.0, npm 11.6.0, Python 3.13. Core dependencies still use the documented offline exception. The previous v0.2.0 milestone passed a clean offline npm ci; no dependencies changed in this repair.
+
+| Check                                              | Actual result                                                                         |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `npm run verify:vendor`                            | Passed: 185 upstream Git blob hashes and matching generated/installed compiled copies |
+| `npm run typecheck`                                | Passed: strict TypeScript                                                             |
+| `npm run lint`                                     | Passed: zero warnings                                                                 |
+| `npm test`                                         | Passed: 6 files, 71 tests                                                             |
+| `npm run build`                                    | Passed: production build, 42 transformed modules                                      |
+| `npm run check`                                    | Passed: combined verification gate                                                    |
+| `python -m py_compile e2e/browser_tests.py`        | Passed                                                                                |
+| `npm run test:e2e`                                 | Setup failed: production preview did not become ready; 0 tests ran                    |
+| `npm ping --fetch-retries=0 --fetch-timeout=10000` | Failed: ENOTFOUND for registry.npmjs.org                                              |
+| `gh auth status`                                   | Failed: invalid local credential                                                      |
+| Connected GitHub profile / repository lookup       | malikmiller-dev / requested repository returned 404                                   |
+| Desktop/mobile visual inspection                   | Not executed                                                                          |
+| GitHub Actions / Pages                             | Not executed / not deployed                                                           |
+
+## Defects reproduced and fixed in this continuation
+
+Before the repairs, the newly added regressions showed:
+
+- Two individually valid 700-attempt backups with long notes could merge above 5 MiB. The import succeeded but the resulting history could not be exported.
+- A new answer/reward, completion reward, or 10,001st attempt could move existing history outside the backup byte/count limits.
+- A second database connection's saved answer replaced the first tab's open draft with feedback.
+- Replacing the answer form after submission left keyboard focus on the document body.
+
+The first targeted run failed six cases. After the fixes, all targeted cases and the full 71-test gate passed. The current tab's exercise selection also remains stable when another connection updates the shared resume point. These are tested database/DOM outcomes; browser behavior still needs verification.
+
+## Passing coverage
+
+- 16 navigation and 5 appearance cases.
+- 8 foundation React cases for routing, focus, appearance recovery and roadmap.
+- 26 content/database cases for formal answer keys, provenance, atomic attempts/rewards, idempotency, concurrency across independent connections, reopening, completion, backup validation/merge, conflicts and rollback.
+- 4 capacity cases using actual size/count boundaries: oversized combined backups, answer/reward rollback, completion rollback, and refusing a 10,001st attempt. Every rejection leaves the prior export byte-for-byte unchanged.
+- 12 quest React cases using the real store and fake-indexeddb: the full learning activity, incorrect attempts, literal-text notes, failure/retry, remount, missing storage, file preview/merge, Blob download, another connection's updates, draft retention, capacity messaging, and focus after submit/retry.
+
+Source tests: [learning-capacity.test.ts](../src/data/learning-capacity.test.ts), [learning-store.test.ts](../src/data/learning-store.test.ts), [Quest.test.tsx](../src/app/Quest.test.tsx), plus existing foundation tests.
+
+## Prepared browser coverage (not passed)
+
+Eleven Playwright tests target the built application: deep links/reload, appearance reload/reopen, denied preference storage, keyboard navigation, mobile menu, six routes at five widths, base-path assets/unavailable features, full quest plus native download/restore into a fresh context, invalid import preserving history, missing IndexedDB, and two-tab draft preservation. The full quest also asserts focus after submission and retry.
+
+The suite cannot reach the production preview on this host. Earlier diagnostics found WinError 10013 for loopback, an asyncio socketpair stall, and direct Chromium exit 3221225506 (0xC0000022). React/jsdom and fake-indexeddb do not prove real browser rendering, accessibility, persistence, native downloads or cross-tab behavior.
 
 ## Review limits
 
-No learning content or official test format was implemented, so educational question review is not claimed. SVG/CSS artwork is original. No real learner data is present. No confirmed defect remained in the executed unit/DOM scope; rendering, browser persistence, and hosted behavior still require verification. Network security audit could not run. The older cached package set must be reviewed and updated before publication.
+The educational content and schema remain unchanged. Internal formal audits do not establish independent educational review; all exercises stay provisional. No real learner records are in the repo.
+
+No known functional regression remains in the supported local test scope. Known dependency advisory matches remain unresolved; see DEPENDENCY_REVIEW. Histories already exceeding the old v0.2.0 backup limits are not automatically repaired or truncated. Full dependency security/current-stable review, browser/visual testing, authenticated GitHub publication, independent content review, and verified Pages deployment remain open gates.

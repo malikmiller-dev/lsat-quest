@@ -8,9 +8,12 @@ describe('static-host navigation', () => {
       expect(parseRoute(hash)).toBe('overview');
     },
   );
-  it.each(['path', 'roadmap', 'settings'])('supports the %s deep link', (route) => {
-    expect(parseRoute(`#/${route}`)).toBe(route);
-  });
+  it.each(['path', 'quest', 'history', 'roadmap', 'settings'])(
+    'supports the %s deep link',
+    (route) => {
+      expect(parseRoute(`#/${route}`)).toBe(route);
+    },
+  );
   it.each(['#/missing', '#/path/other', '#/constructor', '#/Settings', '#/<script>'])(
     'rejects unknown route %s',
     (hash) => {

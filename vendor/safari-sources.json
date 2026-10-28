@@ -1,0 +1,23 @@
+[
+  {
+    "path": "src/index.ts",
+    "sha": "32ec27fbf6cdef978252b94f12da4b6cbb169f1d",
+    "package": "safari-14-idb-fix",
+    "repo": "jakearchibald/safari-14-idb-fix",
+    "commit": "2a9084feb17a1226a5aed0fd3f3d3a49c5b3e9eb"
+  },
+  {
+    "path": "LICENSE",
+    "sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+    "package": "safari-14-idb-fix",
+    "repo": "jakearchibald/safari-14-idb-fix",
+    "commit": "2a9084feb17a1226a5aed0fd3f3d3a49c5b3e9eb"
+  },
+  {
+    "path": "package.json",
+    "sha": "cf23bf278dae9288d32be10573ac164ff86e9aa2",
+    "package": "safari-14-idb-fix",
+    "repo": "jakearchibald/safari-14-idb-fix",
+    "commit": "2a9084feb17a1226a5aed0fd3f3d3a49c5b3e9eb"
+  }
+]

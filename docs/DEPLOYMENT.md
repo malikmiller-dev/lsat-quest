@@ -1,29 +1,25 @@
 # Publication continuation
 
-## Verified access state
+## Current state
 
-The connected GitHub profile identifies `malikmiller-dev` (user ID 13230444). Listing that account's accessible repositories returned no `lsat-quest`. Local `gh auth status` failed: the active `blankcnvs` credential is invalid. Do not push under the old account blindly. The connector can read/write existing repository content but exposes no repository-create or Pages-settings mutation. Browser helpers failed before a usable browser session was available.
+Public source: https://github.com/malikmiller-dev/lsat-quest. Draft Slice 1 PR: https://github.com/malikmiller-dev/lsat-quest/pull/1. Original Git history is preserved without force pushes; origin and tracking branches are configured. Main remains the foundation, while the feature branch includes the learning activity.
 
-## Steps once GitHub authentication and network are available
+The connected GitHub app can publish repository changes. GitHub Actions provides working npm and Chromium access. Local shell network restrictions and the old invalid CLI credential remain; they do not block connected-app operations. Do not recreate the repository or blindly replace its history.
 
-1. Run `gh auth status` and `gh api user --jq .login`; confirm the expected authorized account.
-2. Inspect `gh repo view malikmiller-dev/lsat-quest` before creation. If it exists, fetch and inspect its source/history; reconcile without overwriting or force pushing.
-3. Restore registry network access, review current stable dependency versions/security advisories, update the lockfile, and rerun all checks. The cached dependency set is a local milestone, not the current-stable gate.
-4. If the repository is still absent, create it with the authorized public visibility and description:
+The feature dependency repair and full tests passed; see VALIDATION. Main's first deployment run stopped at its dependency audit, so its deploy job was skipped. Pages is not configured or verified. Repair main's own dependency set and run the foundation checks before deployment. Do not merge provisional Slice 1 merely to obtain its dependency fixes.
 
-```sh
-gh repo create malikmiller-dev/lsat-quest --public --source=. --remote=origin --description "An open, gamified, AI-assisted LSAT preparation platform featuring adaptive learning, spaced repetition, personalized tutoring, and LawHub-based assessment."
-```
+## Remaining deployment steps
 
-5. In repository Settings → Pages, choose **GitHub Actions** as the source. This can also be configured through the authenticated GitHub Pages REST endpoint where account permissions permit.
-6. Push `main`. Inspect the `Deploy GitHub Pages` workflow and its validation job. Do not bypass a failure.
-7. After workflow success, open the returned Pages URL; test direct `#/settings` refresh, assets, both themes, mobile navigation, and stored appearance.
-8. Record actual repository URL, commit SHA, run URL, deployment URL, and verification results in PROGRESS. A predicted URL is not verification.
+1. Repair and validate foundation dependencies in a focused branch/PR, preserving foundation behavior.
+2. Set repository Settings > Pages > Source to GitHub Actions using the authenticated owner session.
+3. Run the main deployment workflow only with a passing audit and functional/browser validation.
+4. Inspect the returned deployment URL, direct hash-route refresh, production assets, themes, mobile navigation, and appearance persistence. Record the actual run and URL; a predicted URL is not verification.
+5. For Slice 1, complete independent content and visual review and final PR checks before merge; then verify native backups, restore, and persistence on the deployed origin.
 
-Later work uses focused feature branches and PR validation before merging to main. Do not rewrite history or push personal/private data.
+## Existing private preview
+
+The owner-only [Sites test preview](https://lsat-quest-v021-malik-test.yellowwren512.chatgpt.site/lsat-quest/) remains unchanged. PREVIEW_ACCEPTANCE records its separate source/version/deployment IDs. Cloud tests on the repaired GitHub source do not establish byte equivalence or hosted behavior for that older preview. Preserve its audience. Learner records do not transfer between origins; export and restore when migrating.
 
 ## Workflow design
 
-`ci.yml` runs on PRs and non-main pushes, and is callable by `deploy.yml`. It installs locked dependencies, checks types/lint/tests/build, runs Playwright against the build, and uploads the exact verified `dist/` only for main. `deploy.yml` requires that job before deployment. Non-main manual deploy requests are excluded. Production permissions are isolated to the deploy job.
-
-Sources consulted: [Vite deployment](https://vite.dev/guide/static-deploy.html#github-pages), [GitHub Pages workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages), [reusable workflows](https://docs.github.com/en/actions/sharing-automations/reusing-workflows), [Playwright CI](https://playwright.dev/python/docs/ci).
+`ci.yml` runs on PRs and non-main pushes, and is callable by `deploy.yml`. It installs locked dependencies, audits runtime/development packages, verifies vendor builds, types, lint, tests, formatting and production build, then runs Chromium tests. Only validated main builds upload Pages artifacts. Deployment requires validation and isolates deployment permissions. The temporary dependency repair workflow was removed after its successful run; its evidence remains in Actions and Git history.

@@ -1,5 +1,7 @@
 """Production-build browser regression tests. Run after npm run build."""
 import os
+import json
+import re
 import faulthandler
 from pathlib import Path
 import shutil
@@ -71,10 +73,10 @@ class BrowserTests(unittest.TestCase):
     def test_navigation_reload_and_unknown_route(self):
         self.page.goto(BASE)
         expect(self.page.get_by_role("heading", level=1)).to_contain_text("Great reasoning")
-        self.page.get_by_role("link", name="Explore the learning path").click()
-        expect(self.page.get_by_role("heading", level=1)).to_have_text("Start with the foundations.")
+        self.page.get_by_role("link", name="Start the first quest", exact=True).click()
+        expect(self.page.get_by_role("heading", level=1)).to_have_text("Necessary & sufficient conditions")
         self.page.reload()
-        expect(self.page.get_by_role("heading", level=1)).to_have_text("Start with the foundations.")
+        expect(self.page.get_by_role("heading", level=1)).to_have_text("Necessary & sufficient conditions")
         self.page.goto(BASE + "#/roadmap")
         expect(self.page.locator(".roadmap-item")).to_have_count(16)
         self.page.goto(BASE + "#/not-a-page")
@@ -113,7 +115,7 @@ class BrowserTests(unittest.TestCase):
         self.page.keyboard.press("Enter")
         expect(self.page.get_by_role("main")).to_be_focused()
         self.page.keyboard.press("Tab")
-        expect(self.page.get_by_role("link", name="Explore the learning path")).to_be_focused()
+        expect(self.page.get_by_role("link", name="Start the first quest", exact=True)).to_be_focused()
         self.page.keyboard.press("Enter")
         expect(self.page.get_by_role("main")).to_be_focused()
 
@@ -134,7 +136,7 @@ class BrowserTests(unittest.TestCase):
     def test_responsive_layout_all_routes(self):
         for width in [320, 390, 768, 1024, 1440]:
             self.page.set_viewport_size({"width": width, "height": 1000})
-            for route in ["overview", "path", "roadmap", "settings"]:
+            for route in ["overview", "path", "quest", "history", "roadmap", "settings"]:
                 with self.subTest(width=width, route=route):
                     self.page.goto(BASE + "#/" + route)
                     expect(self.page.get_by_role("heading", level=1)).to_be_visible()
@@ -151,8 +153,102 @@ class BrowserTests(unittest.TestCase):
         self.assertTrue(self.page.locator("link[rel=stylesheet]").get_attribute("href").startswith("/lsat-quest/"))
         self.assertEqual(self.page.locator("button[disabled]").count(), 0)
         self.page.goto(BASE + "#/path")
-        expect(self.page.get_by_text("Not available yet", exact=True)).to_have_count(4)
+        expect(self.page.get_by_text("Not available yet", exact=True)).to_have_count(3)
         self.assertEqual(self.page.locator("main button").count(), 0, "Planned lessons should not appear playable")
+
+    def test_quest_completion_reload_download_and_restore(self):
+        questions = json.loads((ROOT / "src/content/conditional-v1.json").read_text(encoding="utf-8"))
+        self.page.goto(BASE + "#/quest")
+        self.page.get_by_role("button", name="Start provisional exercises").click()
+        self.page.get_by_role("radio").nth(1).check()
+        self.page.get_by_label("Your reasoning", exact=False).fill("I reversed the rule.")
+        self.page.get_by_role("button", name="Submit answer").click()
+        expect(self.page.get_by_role("heading", name="Not quite. Answer A is supported.")).to_be_visible()
+        expect(self.page.get_by_role("heading", name="Not quite. Answer A is supported.")).to_be_focused()
+        self.page.get_by_role("button", name="Try again").click()
+        expect(self.page.get_by_role("radio").first).to_be_focused()
+        for index, question in enumerate(questions):
+            self.page.get_by_role("radio", name=re.compile(r"^" + question["answer"] + r"\.")).check()
+            self.page.get_by_role("button", name="Submit answer").click()
+            expect(self.page.get_by_role("heading", name=f'Correct. Answer {question["answer"]} is supported.')).to_be_visible()
+            expect(self.page.get_by_role("heading", name=f'Correct. Answer {question["answer"]} is supported.')).to_be_focused()
+            if index < len(questions) - 1:
+                self.page.get_by_role("button", name="Next exercise").click()
+        self.page.get_by_role("button", name="Complete quest").click()
+        expect(self.page.get_by_role("heading", name="Quest complete.")).to_be_visible()
+        self.page.reload()
+        expect(self.page.get_by_text("6/6 solved · 80 XP earned", exact=True)).to_be_visible()
+        self.page.goto(BASE + "#/history")
+        expect(self.page.get_by_text("7 saved attempts. Most recent first.")).to_be_visible()
+        expect(self.page.get_by_text("I reversed the rule.", exact=True)).to_be_visible()
+        self.page.goto(BASE + "#/settings")
+        with self.page.expect_download() as download_info:
+            self.page.get_by_role("button", name="Export study backup").click()
+        backup = ROOT / "test-results/study-backup.json"
+        download_info.value.save_as(str(backup))
+        fresh = self.browser.new_context()
+        self.addCleanup(fresh.close)
+        restored = fresh.new_page()
+        restored.on("pageerror", lambda error: self.errors.append(str(error)))
+        restored.goto(BASE + "#/settings")
+        for _ in range(2):
+            restored.get_by_label("Choose a backup to restore").set_input_files(str(backup))
+            restored.get_by_role("button", name="Merge backup").click()
+            expect(restored.get_by_role("status")).to_contain_text("7 total attempts saved")
+        restored.goto(BASE + "#/quest")
+        expect(restored.get_by_text("6/6 solved · 80 XP earned", exact=True)).to_be_visible()
+        for width in [390, 1440]:
+            restored.set_viewport_size({"width": width, "height": 1000})
+            self.assertTrue(restored.evaluate("document.documentElement.scrollWidth <= window.innerWidth"))
+            restored.screenshot(path=str(ROOT / f"test-results/quest-{width}.png"), full_page=True)
+
+    def test_invalid_restore_preserves_history(self):
+        self.page.goto(BASE + "#/quest")
+        self.page.get_by_role("button", name="Start provisional exercises").click()
+        self.page.get_by_role("radio").first.check()
+        self.page.get_by_role("button", name="Submit answer").click()
+        expect(self.page.get_by_role("heading", name="Correct. Answer A is supported.")).to_be_visible()
+        self.page.goto(BASE + "#/settings")
+        self.page.get_by_label("Choose a backup to restore").set_input_files({"name": "bad.json", "mimeType": "application/json", "buffer": b'{"schemaVersion": 99}'})
+        expect(self.page.get_by_role("alert")).to_contain_text("Unsupported format or schema")
+        expect(self.page.get_by_role("button", name="Merge backup")).to_have_count(0)
+        self.page.goto(BASE + "#/history")
+        expect(self.page.get_by_text("1 saved attempt. Most recent first.")).to_be_visible()
+
+    def test_missing_indexeddb_has_recoverable_error(self):
+        self.context.add_init_script("Object.defineProperty(window, 'indexedDB', {get() {throw new Error('Storage denied');}})")
+        self.page.goto(BASE + "#/quest")
+        expect(self.page.get_by_role("alert")).to_contain_text("Study storage is unavailable")
+        expect(self.page.get_by_role("button", name="Retry storage")).to_be_visible()
+        expect(self.page.get_by_role("button", name="Start provisional exercises")).to_have_count(0)
+        self.page.get_by_role("checkbox", name="Gold border (A)").check()
+        expect(self.page.get_by_text("Violates the rule:", exact=False)).to_be_visible()
+
+    def test_other_tab_updates_preserve_answer_draft(self):
+        self.page.goto(BASE + "#/quest")
+        self.page.get_by_role("button", name="Start provisional exercises").click()
+        self.page.get_by_role("radio").nth(1).check()
+        self.page.get_by_label("Your reasoning", exact=False).fill("My local draft")
+        other = self.context.new_page()
+        other.on("pageerror", lambda error: self.errors.append(str(error)))
+        other.goto(BASE + "#/quest")
+        other.get_by_role("radio").first.check()
+        other.get_by_role("button", name="Submit answer").click()
+        expect(other.get_by_role("heading", name="Correct. Answer A is supported.")).to_be_visible()
+        expect(self.page.get_by_text("1/6 solved · 10 XP earned", exact=True)).to_be_visible()
+        expect(self.page.get_by_role("radio").nth(1)).to_be_checked()
+        expect(self.page.get_by_label("Your reasoning", exact=False)).to_have_value("My local draft")
+        other.get_by_role("button", name="Next exercise").click()
+        other.get_by_role("radio").nth(1).check()
+        other.get_by_role("button", name="Submit answer").click()
+        expect(self.page.get_by_text("2/6 solved · 20 XP earned", exact=True)).to_be_visible()
+        expect(self.page.get_by_role("button", name=re.compile(r"^Exercise 1"))).to_have_attribute("aria-pressed", "true")
+        expect(self.page.get_by_label("Your reasoning", exact=False)).to_have_value("My local draft")
+        self.page.get_by_role("button", name="Submit answer").click()
+        expect(self.page.get_by_role("heading", name="Not quite. Answer A is supported.")).to_be_visible()
+        self.page.goto(BASE + "#/history")
+        expect(self.page.get_by_text("3 saved attempts. Most recent first.")).to_be_visible()
+        expect(self.page.get_by_text("My local draft", exact=True)).to_be_visible()
 
 
 if __name__ == "__main__":
