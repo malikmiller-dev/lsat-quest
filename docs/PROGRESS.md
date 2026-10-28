@@ -43,4 +43,6 @@ Use [DEPLOYMENT](DEPLOYMENT.md) and [CONTENT_REVIEW](CONTENT_REVIEW.md). The nex
 
 ## Git handoff
 
-Local main contains `cdf60c7` (foundation) and `b8a920f` (blocker/handoff documentation). Current feature work will be committed conventionally; use `git log --oneline --all` as authoritative. No commit has been pushed. The milestone archive includes source, build output, documentation, and a verified Git bundle preserving both branches.
+Local main contains `cdf60c7` (foundation) and `b8a920f` (blocker/handoff documentation). Slice 1 implementation is committed as `a896074` on `feat/first-learning-quest`; a following documentation commit records this handoff. Use `git log --oneline --all` as authoritative. No commit has been pushed. The milestone archive includes source, build output, documentation, and a verified Git bundle preserving both branches.
+
+The final combined check passed after a clean offline `npm ci` reinstalled 323 packages. Formatting and Git whitespace checks also passed. Upstream vendor whitespace is preserved intentionally, with source integrity checked against recorded Git blob hashes.
